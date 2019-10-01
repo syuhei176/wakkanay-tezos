@@ -1,0 +1,44 @@
+{
+  "name": "wakkanay",
+  "author": {
+    "name": "Cryptoeconomics Lab",
+    "url": "https://www.cryptoeconomicslab.com/"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "build": "tsc --build ./tsconfig.json",
+    "build:dev": "tsc",
+    "format": "tslint --fix 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint 'src/**/*.ts' 'test/**/*.ts'"
+  },
+  "dependencies": {
+    "@types/chai": "^4.2.3",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/mocha": "^5.2.5",
+    "@types/mqtt": "^2.5.0",
+    "@types/node-fetch": "^2.5.1",
+    "@types/react-native-sqlite-storage": "^3.3.1",
+    "ethers": "^4.0.37",
+    "js-logger": "^1.6.0",
+    "node-fetch": "^2.3.0",
+    "prettier": "^1.18.2",
+    "react-native-sqlite-storage": "^4.1.0",
+    "socket.io": "^2.3.0",
+    "ts-node": "^8.4.1",
+    "tslib": "^1.10.0",
+    "typescript": "^3.6.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^3.0.0",
+    "mocha": "^6.0.2",
+    "nyc": "^14.0.0",
+    "tslint": "^5.20.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typedoc": "^0.15.0"
+  }
+}
