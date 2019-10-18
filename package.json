@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
+    "build:check": "tsc --noEmit",
     "build:dev": "tsc",
     "test": "jest",
     "lint": "eslint --ext ts,tsx src",
