@@ -16,25 +16,26 @@
     "lint:fix": "eslint --fix --ext ts,tsx src"
   },
   "dependencies": {
-    "ethers": "^4.0.37",
+    "ethers": "^4.0.38",
     "js-logger": "^1.6.0",
     "levelup": "^4.3.1",
     "memdown": "^5.1.0",
     "node-fetch": "^2.3.0",
     "react-native-sqlite-storage": "^4.1.0",
     "socket.io": "^2.3.0",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "web3-eth-abi": "^1.2.2"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
+    "@types/jest": "^24.0.20",
     "@types/levelup": "^3.1.1",
     "@types/memdown": "^3.0.0",
     "@types/node-fetch": "^2.5.2",
     "@types/react-native-sqlite-storage": "^3.3.1",
-    "@typescript-eslint/eslint-plugin": "^2.4.0",
-    "@typescript-eslint/parser": "^2.4.0",
-    "eslint": "^6.5.1",
-    "eslint-config-prettier": "^6.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.5.0",
+    "@typescript-eslint/parser": "^2.5.0",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
     "jest": "^24.9.0",
     "nyc": "^14.0.0",
@@ -42,7 +43,7 @@
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.4"
   },
   "jest": {
     "transform": {
