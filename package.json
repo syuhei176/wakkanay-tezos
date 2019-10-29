@@ -23,8 +23,7 @@
     "node-fetch": "^2.3.0",
     "react-native-sqlite-storage": "^4.1.0",
     "socket.io": "^2.3.0",
-    "tslib": "^1.10.0",
-    "web3-eth-abi": "^1.2.2"
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.20",
