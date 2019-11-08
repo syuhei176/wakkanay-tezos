@@ -54,7 +54,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testMatch": [
-      "**/__tests__/**/*.ts",
+      "**/__tests__/**/?(*.)+(spec|test).ts",
       "**/?(*.)+(spec|test).ts"
     ],
     "moduleFileExtensions": [
