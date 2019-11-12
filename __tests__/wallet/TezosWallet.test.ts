@@ -35,4 +35,10 @@ describe('TezosWallet', () => {
       expect(verify).toBeFalsy()
     })
   })
+  describe('getL1Balance', () => {
+    it('succeed to get L1 balance', async () => {
+      const balance = await wallet.getL1Balance()
+      expect(balance).toBeTruthy()
+    })
+  })
 })
