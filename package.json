@@ -8,13 +8,16 @@
   "engines": {
     "node": ">=10"
   },
+  "lib": "dist/index.js",
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
     "build:check": "tsc --noEmit",
     "build:dev": "tsc",
     "test": "jest",
     "lint": "eslint --ext ts,tsx src",
-    "lint:fix": "eslint --fix --ext ts,tsx src"
+    "lint:fix": "eslint --fix --ext ts,tsx src",
+    "install": "npm run build",
+    "prepare": "echo 'prepare'"
   },
   "dependencies": {
     "ethers": "^4.0.38",
