@@ -9,6 +9,10 @@
     "node": ">=10"
   },
   "lib": "dist/index.js",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
+  ],
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
     "build:check": "tsc --noEmit",
@@ -16,8 +20,7 @@
     "test": "jest",
     "lint": "eslint --ext ts,tsx src",
     "lint:fix": "eslint --fix --ext ts,tsx src",
-    "install": "npm run build",
-    "prepare": "echo 'prepare'"
+    "prepare": "npm run build"
   },
   "dependencies": {
     "ethers": "^4.0.38",
