@@ -16,7 +16,6 @@
     "lint:fix": "eslint --fix --ext ts,tsx src"
   },
   "dependencies": {
-    "@types/libsodium-wrappers-sumo": "^0.7.3",
     "bignumber.js": "^9.0.0",
     "conseiljs": "^0.3.1",
     "dotenv": "^8.2.0",
@@ -43,6 +42,7 @@
     "@typescript-eslint/parser": "^2.5.0",
     "@types/socket.io": "^2.1.4",
     "@types/socket.io-client": "^1.4.32",
+    "@types/libsodium-wrappers-sumo": "^0.7.3",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
