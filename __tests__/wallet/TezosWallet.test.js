@@ -53,6 +53,8 @@ describe('TzWallet', () => {
     it('succeed to get L1 balance', async () => {
       const balance = await wallet.getL1Balance()
       expect(balance).toBeTruthy()
+      expect(balance.decimals).toBe(6)
+      expect(balance.symbol).toBe('tz')
       expect(mockGetAccount).toHaveBeenCalledTimes(1)
     })
   })
