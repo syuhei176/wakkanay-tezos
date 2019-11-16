@@ -1,5 +1,6 @@
 {
   "name": "wakkanay",
+  "version": "0.0.1",
   "author": {
     "name": "Cryptoeconomics Lab",
     "url": "https://www.cryptoeconomicslab.com/"
@@ -7,13 +8,19 @@
   "engines": {
     "node": ">=10"
   },
+  "main": "dist/index.js",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
+  ],
   "scripts": {
     "build": "tsc --build ./tsconfig.json",
     "build:check": "tsc --noEmit",
     "build:dev": "tsc",
     "test": "jest",
     "lint": "eslint --ext ts,tsx src",
-    "lint:fix": "eslint --fix --ext ts,tsx src"
+    "lint:fix": "eslint --fix --ext ts,tsx src",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "bignumber.js": "^9.0.0",
