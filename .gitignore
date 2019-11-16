@@ -7,7 +7,6 @@ coverage
 .db/*
 .plasmadb/*
 .env
-.env.test
 CHANGELOG.md
 .nyc_output
 coverage.json

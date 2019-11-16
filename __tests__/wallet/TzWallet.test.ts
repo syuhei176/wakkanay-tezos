@@ -1,11 +1,9 @@
 import { TzWalletFactory, IWallet, IWalletFactory } from '../../src/wallet'
 import { Bytes } from '../../src/types/Codables'
-import { TzEnv } from '../../src/utils'
 
 describe('TzWallet', () => {
   let factory: IWalletFactory, wallet: IWallet
   beforeEach(async () => {
-    TzEnv.setEnv()
     factory = new TzWalletFactory()
     wallet = await factory.fromPrivateKey(
       'edskRpVqFG2FHo11aB9pzbnHBiPBWhNWdwtNyQSfEEhDf5jhFbAtNS41vg9as7LSYZv6rEbtJTwyyEg9cNDdcAkSr9Z7hfvquB'
