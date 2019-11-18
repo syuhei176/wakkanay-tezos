@@ -23,10 +23,13 @@
     "prepare": "npm run build"
   },
   "dependencies": {
+    "bignumber.js": "^9.0.0",
+    "conseiljs": "^0.3.1",
     "ethers": "^4.0.38",
     "express": "^4.17.1",
     "js-logger": "^1.6.0",
     "levelup": "^4.3.1",
+    "libsodium-wrappers-sumo": "^0.7.6",
     "memdown": "^5.1.0",
     "node-fetch": "^2.3.0",
     "react-native-sqlite-storage": "^4.1.0",
@@ -45,6 +48,7 @@
     "@typescript-eslint/parser": "^2.5.0",
     "@types/socket.io": "^2.1.4",
     "@types/socket.io-client": "^1.4.32",
+    "@types/libsodium-wrappers-sumo": "^0.7.3",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
@@ -61,7 +65,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testMatch": [
-      "**/__tests__/**/?(*.)+(spec|test).ts",
+      "**/__tests__/**/?(*.)+(spec|test).(ts|js)",
       "**/?(*.)+(spec|test).ts"
     ],
     "moduleFileExtensions": [
