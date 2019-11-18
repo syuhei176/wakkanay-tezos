@@ -1,8 +1,18 @@
-import { TzWalletFactory, IWallet, IWalletFactory } from '../../src/wallet'
-import { Bytes } from '../../src/types/Codables'
+jest.unmock('conseiljs')
+const conseiljs = require('conseiljs')
+const { TzWalletFactory } = require('../../src/wallet')
+const { Bytes } = require('../../src/types/Codables')
+
+const mockGetAccount = jest.fn().mockImplementation(async () => {
+  return [{ balance: 100 }]
+})
+
+conseiljs.TezosConseilClient = {
+  getAccount: mockGetAccount
+}
 
 describe('TzWallet', () => {
-  let factory: IWalletFactory, wallet: IWallet
+  let factory, wallet
   beforeEach(async () => {
     factory = new TzWalletFactory()
     wallet = await factory.fromPrivateKey(
@@ -20,7 +30,9 @@ describe('TzWallet', () => {
     it('succeed to verify signature', async () => {
       const message = Bytes.fromHexString('0x00123456')
       const signature = await wallet.signMessage(message)
-      const publicKey = Bytes.fromString('edpkuuGJ4ssH3N5k7ovwkBe16p8rVX1XLENiZ4FAayrcwUf9sCKXnG')
+      const publicKey = Bytes.fromString(
+        'edpkuuGJ4ssH3N5k7ovwkBe16p8rVX1XLENiZ4FAayrcwUf9sCKXnG'
+      )
       const verify = await wallet.verifySignature(message, signature, publicKey)
       expect(verify).toBeTruthy()
     })
@@ -30,7 +42,9 @@ describe('TzWallet', () => {
       )
       const message = Bytes.fromHexString('0x00123456')
       const signature = await bobWallet.signMessage(message)
-      const publicKey = Bytes.fromString('edpkuuGJ4ssH3N5k7ovwkBe16p8rVX1XLENiZ4FAayrcwUf9sCKXnG')
+      const publicKey = Bytes.fromString(
+        'edpkuuGJ4ssH3N5k7ovwkBe16p8rVX1XLENiZ4FAayrcwUf9sCKXnG'
+      )
       const verify = await wallet.verifySignature(message, signature, publicKey)
       expect(verify).toBeFalsy()
     })
@@ -39,6 +53,9 @@ describe('TzWallet', () => {
     it('succeed to get L1 balance', async () => {
       const balance = await wallet.getL1Balance()
       expect(balance).toBeTruthy()
+      expect(balance.decimals).toBe(6)
+      expect(balance.symbol).toBe('tz')
+      expect(mockGetAccount).toHaveBeenCalledTimes(1)
     })
   })
 })
