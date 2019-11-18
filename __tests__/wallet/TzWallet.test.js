@@ -30,10 +30,7 @@ describe('TzWallet', () => {
     it('succeed to verify signature', async () => {
       const message = Bytes.fromHexString('0x00123456')
       const signature = await wallet.signMessage(message)
-      const publicKey = Bytes.fromString(
-        'edpkuuGJ4ssH3N5k7ovwkBe16p8rVX1XLENiZ4FAayrcwUf9sCKXnG'
-      )
-      const verify = await wallet.verifySignature(message, signature, publicKey)
+      const verify = await wallet.verifyMySignature(message, signature)
       expect(verify).toBeTruthy()
     })
     it('fail to verify signature', async () => {
@@ -42,10 +39,7 @@ describe('TzWallet', () => {
       )
       const message = Bytes.fromHexString('0x00123456')
       const signature = await bobWallet.signMessage(message)
-      const publicKey = Bytes.fromString(
-        'edpkuuGJ4ssH3N5k7ovwkBe16p8rVX1XLENiZ4FAayrcwUf9sCKXnG'
-      )
-      const verify = await wallet.verifySignature(message, signature, publicKey)
+      const verify = await wallet.verifyMySignature(message, signature)
       expect(verify).toBeFalsy()
     })
   })
