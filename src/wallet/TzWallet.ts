@@ -1,8 +1,10 @@
-import { IWallet } from '../interfaces/IWallet'
-import { IDepositContract } from '../../contract'
-import { DepositContract } from '../../contract/tz/DepositContract'
-import { Address, Bytes } from '../../types/Codables'
-import { Balance } from '../../types'
+import { contract } from 'wakkanay'
+import { IWallet } from 'wakkanay/dist/wallet/interfaces/IWallet'
+import IDepositContract = contract.IDepositContract
+import { DepositContract } from '../contract/DepositContract'
+import { Address, Bytes } from 'wakkanay/dist/types/Codables'
+import { Balance } from 'wakkanay/dist/types'
+import { ed25519Verifier } from 'wakkanay/dist/verifiers'
 import BigNumber from 'bignumber.js'
 import {
   ConseilServerInfo,
@@ -11,7 +13,6 @@ import {
   TezosConseilClient,
   TezosMessageUtils
 } from 'conseiljs'
-import { ed25519Verifier } from '../../verifiers'
 
 export class TzWallet implements IWallet {
   constructor(

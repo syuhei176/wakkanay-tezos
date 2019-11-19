@@ -1,6 +1,11 @@
-# Wakkanay
+# Wakkanay-Tezos
 
-Wakkanay is experimental ovm implementation in TypeScript.
+Wakkanay-Tezos is experimental ovm implementation in TypeScript for Tezos.
 
-[![Build Status](https://travis-ci.org/cryptoeconomicslab/wakkanay.svg?branch=master)](https://travis-ci.org/cryptoeconomicslab/wakkanay)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9ccf1cc1e1a342fba4505dcf70565d82)](https://www.codacy.com/manual/CEL/wakkanay?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cryptoeconomicslab/wakkanay&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/cryptoeconomicslab/wakkanay-tezos.svg?branch=master)](https://travis-ci.org/cryptoeconomicslab/wakkanay-tezos)
+
+## Test
+
+```
+npm test
+```

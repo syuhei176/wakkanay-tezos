@@ -1,6 +1,7 @@
-import { IDepositContract } from '../interfaces/IDepositContract'
-import { Integer } from '../../../src/types/Codables'
-import { Property } from '../../ovm/types'
+import { Integer } from 'wakkanay/dist/types/Codables'
+import { Property } from 'wakkanay/dist/ovm/types'
+import { contract } from 'wakkanay'
+import IDepositContract = contract.IDepositContract
 
 /**
  * TODO: add implementation

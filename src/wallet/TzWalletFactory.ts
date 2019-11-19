@@ -1,5 +1,5 @@
-import { IWallet } from '../interfaces/IWallet'
-import { IWalletFactory } from '../interfaces/IWalletFactory'
+import { IWallet } from 'wakkanay/dist/wallet/interfaces/IWallet'
+import { IWalletFactory } from 'wakkanay/dist/wallet/interfaces/IWalletFactory'
 import { TzWallet } from './TzWallet'
 import { ConseilServerInfo, TezosWalletUtil } from 'conseiljs'
 
