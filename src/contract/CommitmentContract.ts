@@ -11,15 +11,8 @@ export class CommitmentContract implements ICommitmentContract {
    */
   async submit(blockNumber: number, root: Bytes) {
     const amount = 0
-    const entrypoint = 'main'
-    const params = `Submit(
-      record
-        block_number = ${blockNumber};
-        block_number_string = ${blockNumber.toString()};
-        root = ${root.toHexString()};
-      end
-    )`
-
+    const entrypoint = 'submit'
+    const params = `(Right (Pair (Pair ${blockNumber} "${blockNumber.toString()}") "${root.toHexString()}"))`
     await this.connection.invokeContract(amount, entrypoint, params)
   }
 
