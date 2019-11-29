@@ -8,13 +8,12 @@ import {
 } from 'conseiljs'
 import { TzWallet } from '../wallet'
 
+// TODO: research default limits per operation
+export const DefaultTransactionStorageLimit = 300
+export const DefaultTransactionGasLimit = 10600
+
 export class ContractHelper {
-  constructor(
-    readonly tzWallet: TzWallet,
-    readonly contractAddress: Address,
-    readonly storageLimit: number,
-    readonly gasLimit: number
-  ) {}
+  constructor(readonly tzWallet: TzWallet, readonly contractAddress: Address) {}
 
   /**
    * get optimal fee
@@ -38,7 +37,9 @@ export class ContractHelper {
   public async invokeContract(
     amount: number,
     entrypoint: string,
-    params: string
+    params: string,
+    storageLimit: number = DefaultTransactionStorageLimit,
+    gasLimit: number = DefaultTransactionGasLimit
   ): Promise<OperationResult> {
     // BIP44 Derivation Path if signed with hardware, empty if signed with software
     const derivationPath = ''
@@ -51,8 +52,8 @@ export class ContractHelper {
       amount,
       fee,
       derivationPath,
-      this.storageLimit,
-      this.gasLimit,
+      storageLimit,
+      gasLimit,
       entrypoint,
       params,
       TezosParameterFormat.Michelson

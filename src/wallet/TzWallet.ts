@@ -78,17 +78,8 @@ export class TzWallet implements IWallet {
   /**
    * Get contract helper instance which connecting by this wallet
    */
-  public getConnection(
-    contractAddress: Address,
-    storageLimit: number,
-    gasLimit: number
-  ): ContractHelper {
-    const contractHelper = new ContractHelper(
-      this,
-      contractAddress,
-      storageLimit,
-      gasLimit
-    )
+  public getConnection(contractAddress: Address): ContractHelper {
+    const contractHelper = new ContractHelper(this, contractAddress)
     return contractHelper
   }
 }
