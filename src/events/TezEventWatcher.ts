@@ -100,8 +100,9 @@ export default class EventWatcher implements IEventWatcher {
     // TODO
     // TezosNodeReader.getLogs()
     // performGetRequest(server, `chains/${chainid}/blocks/${blockHash}/${blockHash}>/context/contracts/${accountHash}/storage`).logs
-    // ref1 https://github.com/Cryptonomic/ConseilJS/blob/f189bc1d8aafa33db2d5beb587711faadfb51e50/src/chain/tezos/TezosNodeReader.ts#L46-L48
-    // ref2 https://tezos.gitlab.io/tezos/api/rpc.html#get-block-id-context-contracts-contract-id-storage
+    // ref1 https://tezos.stackexchange.com/a/1359
+    // ref2 https://github.com/Cryptonomic/ConseilJS/blob/f189bc1d8aafa33db2d5beb587711faadfb51e50/src/chain/tezos/TezosNodeReader.ts#L46-L48
+    // ref3 https://tezos.gitlab.io/tezos/api/rpc.html#get-block-id-context-contracts-contract-id-storage
     const events = await this.httpProvider.getLogs({//TODO
       address: this.contractAddress,
       fromBlock: fromBlockNumber,
