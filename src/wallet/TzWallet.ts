@@ -1,7 +1,4 @@
-import { contract } from 'wakkanay'
 import { IWallet } from 'wakkanay/dist/wallet/interfaces/IWallet'
-import IDepositContract = contract.IDepositContract
-import { DepositContract } from '../contract/DepositContract'
 import { Address, Bytes } from 'wakkanay/dist/types/Codables'
 import { Balance } from 'wakkanay/dist/types'
 import { ed25519Verifier } from 'wakkanay/dist/verifiers'
@@ -25,9 +22,6 @@ export class TzWallet implements IWallet {
     return Address.from(this.keyStore.publicKeyHash)
   }
 
-  /**
-   * TODO: support ERC20
-   */
   public async getL1Balance(): Promise<Balance> {
     // can't get an account if it has not participated in a transaction yet
     const account = await TezosConseilClient.getAccount(
@@ -66,13 +60,6 @@ export class TzWallet implements IWallet {
   ): Promise<boolean> {
     const publicKey = Bytes.fromString(this.keyStore.publicKey)
     return ed25519Verifier.verify(message, signature, publicKey)
-  }
-
-  /**
-   * TODO: add implementation
-   */
-  public getDepositContract(address: Address): IDepositContract {
-    return new DepositContract()
   }
 
   /**
