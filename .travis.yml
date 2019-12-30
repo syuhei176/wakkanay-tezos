@@ -2,6 +2,9 @@ language: node_js
 node_js:
   - 10
 
+cache:
+  npm: false
+
 before_install:
   # Upgrade npm to >=6.12 because of prepare don't work with `npm ci` command.
   # https://npm.community/t/npm-ci-does-not-run-prepare-script-for-git-modules-version-6-11/10076/3
