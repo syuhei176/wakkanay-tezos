@@ -8,37 +8,35 @@ import BigNumber = types.BigNumber
 import List = types.List
 import Tuple = types.Tuple
 import Struct = types.Struct
+import flattenDeep from 'lodash.flattendeep'
 import { AbiEncodeError, AbiDecodeError } from './Error'
-import {
-  MichelinePrimItem,
-  encodeToMicheline,
-  isMichelinePrim
-} from './Micheline'
+import { MichelinePrimItems, isMichelinePrim } from './MichelineTypes'
 
-function encodeToPair(codables: Codable[], input: any[]): MichelinePrimItem {
+function encodeToPair(
+  codables: Codable[],
+  input: Tuple[] | Struct[]
+): MichelinePrimItems {
   if (codables.length === 0) {
     throw new Error('Input codables have to have at least one element')
-  }
-  if (codables.length === 1) {
-    return encodeInnerToMichelinePrimItem(codables[0], input[0])
+  } else if (codables.length === 1) {
+    return encodeInnerToMichelinePrimItems(codables[0], input[0])
   } else {
     const i = codables.length - 1
     return {
       prim: 'Pair',
       args: [
         encodeToPair(codables.slice(0, i), input.slice(0, i)),
-        encodeInnerToMichelinePrimItem(codables[i], input[i])
+        encodeInnerToMichelinePrimItems(codables[i], input[i])
       ]
-    }
+    } as MichelinePrimItems
   }
 }
-
-export function encodeInnerToMichelinePrimItem(
+export function encodeInnerToMichelinePrimItems(
   d: Codable,
   input: any
-): MichelinePrimItem {
+): MichelinePrimItems {
   if (d instanceof Integer) {
-    return { number: input }
+    return { int: input }
   } else if (d instanceof BigNumber) {
     return { string: input }
   } else if (d instanceof Address) {
@@ -46,12 +44,9 @@ export function encodeInnerToMichelinePrimItem(
   } else if (d instanceof Bytes) {
     return { string: Bytes.from(input).intoString() }
   } else if (d instanceof List) {
-    const pairItems: MichelinePrimItem[] = []
-    input.map((item: any) => {
-      const di = d.getC().default()
-      pairItems.push(encodeInnerToMichelinePrimItem(di, item))
-    })
-    return pairItems
+    return input.map((item: any) =>
+      encodeInnerToMichelinePrimItems(d.getC().default(), item)
+    )
   } else if (d instanceof Tuple) {
     return encodeToPair(d.data, input)
   } else if (d instanceof Struct) {
@@ -73,13 +68,15 @@ export function encodeInnerToMichelinePrimItem(
  * @param list decoded data list
  * @param arg Micheline data
  */
-function decodeArgs(list: Array<any>, arg: any) {
+function decodeArgs(arg: MichelinePrimItems): MichelinePrimItems[] {
   if (isMichelinePrim(arg)) {
-    arg.args.map((item: any) => decodeArgs(list, item))
+    return flattenDeep(
+      arg.args.map((item: MichelinePrimItems) => decodeArgs(item))
+    )
   } else if (arg instanceof Array) {
-    arg.map((item: any) => list.push(item))
+    return arg.map((item: MichelinePrimItems) => item)
   } else {
-    list.push(arg)
+    return [arg]
   }
 }
 export function decodeInner(d: Codable, input: any): Codable {
@@ -100,13 +97,10 @@ export function decodeInner(d: Codable, input: any): Codable {
       })
     )
   } else if (d instanceof Tuple) {
-    const list: Array<any> = []
-    decodeArgs(list, input)
+    const list: MichelinePrimItems[] = decodeArgs(input)
     d.setData(d.data.map((d, i) => decodeInner(d, list[i])))
   } else if (d instanceof Struct) {
-    const list: Array<any> = []
-    decodeArgs(list, input)
-
+    const list: MichelinePrimItems[] = decodeArgs(input)
     const data: { [key: string]: Codable } = {}
     Object.keys(d.data).forEach((k, i) => {
       data[k] = decodeInner(d.data[k], list[i])
@@ -124,8 +118,16 @@ const TzCoder: Coder = {
    * @param input codable object to encode
    */
   encode(input: Codable): Bytes {
-    const MichelinePrimItem = encodeInnerToMichelinePrimItem(input, input.raw)
-    return encodeToMicheline(MichelinePrimItem)
+    const michelinePrimItems = encodeInnerToMichelinePrimItems(input, input.raw)
+    return Bytes.fromString(
+      JSON.stringify(michelinePrimItems, function(key, val) {
+        if (key === 'int') {
+          return val.toString()
+        } else {
+          return val
+        }
+      })
+    )
   },
   /**
    * decode given Micheline string into given codable object

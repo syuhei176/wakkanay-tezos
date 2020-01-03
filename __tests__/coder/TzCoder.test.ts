@@ -13,13 +13,13 @@ describe('TzCoder', () => {
     test('encode Address', () => {
       const addr = Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
       expect(TzCoder.encode(addr).intoString()).toBe(
-        '{ "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" }'
+        '{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"}'
       )
     })
 
     test('encode BigNumber', () => {
       const addr = BigNumber.from(1)
-      expect(TzCoder.encode(addr).intoString()).toBe('{ "string": "1" }')
+      expect(TzCoder.encode(addr).intoString()).toBe('{"string":"1"}')
     })
 
     test('encode Struct', () => {
@@ -29,7 +29,7 @@ describe('TzCoder', () => {
         greet: Bytes.fromString('hello')
       })
       expect(TzCoder.encode(struct).intoString()).toBe(
-        '{ "prim": "Pair", "args": [ { "prim": "Pair", "args": [ { "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" }, { "string": "hello" } ] }, { "int": "5" } ] }'
+        '{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"},{"string":"hello"}]},{"int":"5"}]}'
       )
     })
 
@@ -40,7 +40,7 @@ describe('TzCoder', () => {
         Bytes.fromString('hello')
       ])
       expect(TzCoder.encode(tuple).intoString()).toBe(
-        '{ "prim": "Pair", "args": [ { "prim": "Pair", "args": [ { "int": "5" }, { "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" } ] }, { "string": "hello" } ] }'
+        '{"prim":"Pair","args":[{"prim":"Pair","args":[{"int":"5"},{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"}]},{"string":"hello"}]}'
       )
     })
 
@@ -54,7 +54,7 @@ describe('TzCoder', () => {
         Integer.from(3)
       ])
       expect(TzCoder.encode(list).intoString()).toBe(
-        '[ { "int": "1" }, { "int": "2" }, { "int": "3" } ]'
+        '[{"int":"1"},{"int":"2"},{"int":"3"}]'
       )
     })
 
@@ -77,7 +77,7 @@ describe('TzCoder', () => {
         })
       ])
       expect(TzCoder.encode(list).intoString()).toBe(
-        '[ { "prim": "Pair", "args": [ { "string": "hello" }, { "int": "1" } ] }, { "prim": "Pair", "args": [ { "string": "hello" }, { "int": "2" } ] } ]'
+        '[{"prim":"Pair","args":[{"string":"hello"},{"int":"1"}]},{"prim":"Pair","args":[{"string":"hello"},{"int":"2"}]}]'
       )
     })
 
@@ -93,20 +93,20 @@ describe('TzCoder', () => {
         List.from(childFactory, [Integer.from(6), Integer.from(9)])
       ])
       expect(TzCoder.encode(list).intoString()).toBe(
-        '[ [ { "int": "1" }, { "int": "4" } ], [ { "int": "6" }, { "int": "9" } ] ]'
+        '[[{"int":"1"},{"int":"4"}],[{"int":"6"},{"int":"9"}]]'
       )
     })
 
     test('encode empty List', () => {
       const list = List.from(Bytes, [])
-      expect(TzCoder.encode(list).intoString()).toBe('[  ]')
+      expect(TzCoder.encode(list).intoString()).toBe('[]')
     })
   })
 
   describe('decode', () => {
     test('decode Address', () => {
       const b = Bytes.fromString(
-        '{ "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" }'
+        '{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"}'
       )
       expect(TzCoder.decode(Address.default(), b)).toStrictEqual(
         Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
@@ -114,7 +114,7 @@ describe('TzCoder', () => {
     })
 
     test('decode BigNumber', () => {
-      const b = Bytes.fromString('{ "string": "1" }')
+      const b = Bytes.fromString('{"string":"1"}')
       expect(TzCoder.decode(BigNumber.default(), b)).toStrictEqual(
         BigNumber.from(1)
       )
@@ -122,7 +122,7 @@ describe('TzCoder', () => {
 
     test('decode Struct', () => {
       const b = Bytes.fromString(
-        '{ "prim": "Pair", "args": [ { "prim": "Pair", "args": [ { "int": "5" }, { "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" } ] }, { "string": "hello" } ] }'
+        '{"prim":"Pair","args":[{"prim":"Pair","args":[{"int": "5"},{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"}]},{"string":"hello"}]}'
       )
       const t = Struct.from({
         num: Integer.default(),
@@ -140,7 +140,7 @@ describe('TzCoder', () => {
 
     test('decode Tuple', () => {
       const b = Bytes.fromString(
-        '{ "prim": "Pair", "args": [ { "prim": "Pair", "args": [ { "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" }, { "string": "hello" } ] }, { "int": "5" } ] }'
+        '{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"},{"string":"hello"}]},{"int":"5"}]}'
       )
       const t = Tuple.from([
         Address.default(),
@@ -157,9 +157,7 @@ describe('TzCoder', () => {
     })
 
     test('decode List of Integer', () => {
-      const b = Bytes.fromString(
-        '[ { "int": "1" }, { "int": "2" }, { "int": "3" } ]'
-      )
+      const b = Bytes.fromString('[{"int":"1"},{"int":"2"},{"int":"3"}]')
       const t = List.default(Integer, Integer.default())
       expect(TzCoder.decode(t, b)).toStrictEqual(
         List.from(Integer, [Integer.from(1), Integer.from(2), Integer.from(3)])
@@ -171,7 +169,7 @@ describe('TzCoder', () => {
         default: () => Tuple.from([Integer.default(), Bytes.default()])
       }
       const b = Bytes.fromString(
-        '[ { "prim": "Pair", "args": [ { "int": "1" }, { "string": "hello" } ] }, { "prim": "Pair", "args": [ { "int": "2" }, { "string": "hello" } ] } ]'
+        '[{"prim":"Pair","args":[{"int":"1"},{"string":"hello"}]},{"prim":"Pair","args":[{"int":"2"},{"string":"hello"}]}]'
       )
       const t = List.default(
         factory,
@@ -194,7 +192,7 @@ describe('TzCoder', () => {
           })
       }
       const b = Bytes.fromString(
-        '[ { "prim": "Pair", "args": [ { "int": "1" }, { "string": "hello" } ] }, { "prim": "Pair", "args": [ { "int": "2" }, { "string": "hello" } ] } ]'
+        '[{"prim":"Pair","args":[{"int":"1"},{"string":"hello"}]},{"prim":"Pair","args":[{"int":"2"},{"string":"hello"}]}]'
       )
       const t = List.default(
         factory,
@@ -225,7 +223,7 @@ describe('TzCoder', () => {
         default: () => List.from(childFactory, [])
       }
       const b = Bytes.fromString(
-        '[ [ { "int": "1" }, { "int": "4" } ], [ { "int": "6" }, { "int": "9" } ] ]'
+        '[[{"int":"1"},{"int":"4"}],[{"int":"6"},{"int":"9"}]]'
       )
       const t = List.default(
         factory,
