@@ -10,16 +10,33 @@ import Tuple = types.Tuple
 import Struct = types.Struct
 import { AbiEncodeError, AbiDecodeError } from './Error'
 import {
-  Primitive,
-  PrimitiveItem,
+  MichelinePrimItem,
   encodeToMicheline,
-  implementsPrimitive
-} from './Primitive'
+  isMichelinePrim
+} from './Micheline'
 
-export function encodeInnerToPrimitiveItem(
+function encodeToPair(codables: Codable[], input: any[]): MichelinePrimItem {
+  if (codables.length === 0) {
+    throw new Error('Input codables have to have at least one element')
+  }
+  if (codables.length === 1) {
+    return encodeInnerToMichelinePrimItem(codables[0], input[0])
+  } else {
+    const i = codables.length - 1
+    return {
+      prim: 'Pair',
+      args: [
+        encodeToPair(codables.slice(0, i), input.slice(0, i)),
+        encodeInnerToMichelinePrimItem(codables[i], input[i])
+      ]
+    }
+  }
+}
+
+export function encodeInnerToMichelinePrimItem(
   d: Codable,
   input: any
-): PrimitiveItem {
+): MichelinePrimItem {
   if (d instanceof Integer) {
     return { number: input }
   } else if (d instanceof BigNumber) {
@@ -29,36 +46,23 @@ export function encodeInnerToPrimitiveItem(
   } else if (d instanceof Bytes) {
     return { string: Bytes.from(input).intoString() }
   } else if (d instanceof List) {
-    const pairItems: PrimitiveItem[] = []
+    const pairItems: MichelinePrimItem[] = []
     input.map((item: any) => {
       const di = d.getC().default()
-      pairItems.push(encodeInnerToPrimitiveItem(di, item))
+      pairItems.push(encodeInnerToMichelinePrimItem(di, item))
     })
     return pairItems
   } else if (d instanceof Tuple) {
-    let primitiveTmp: Primitive = { prim: '', args: [] }
-    const primitive: Primitive = { prim: '', args: [] }
-    d.data.map((td, i) => {
-      if (i % 2 === 0) primitiveTmp = { prim: '', args: [] }
-      primitiveTmp.args.push(encodeInnerToPrimitiveItem(td, input[i]))
-      if (primitiveTmp.args.length > 1) primitiveTmp.prim = 'Pair'
-      if (primitiveTmp.args.length > 1 || !(d.data.length - 1 > i))
-        primitive.args.push(primitiveTmp)
-    })
-    if (primitive.args.length > 1) primitive.prim = 'Pair'
-    return primitive
+    return encodeToPair(d.data, input)
   } else if (d instanceof Struct) {
-    let primitiveTmp: Primitive = { prim: '', args: [] }
-    const primitive: Primitive = { prim: '', args: [] }
-    Object.keys(d.data).forEach((k, i) => {
-      if (i % 2 === 0) primitiveTmp = { prim: '', args: [] }
-      primitiveTmp.args.push(encodeInnerToPrimitiveItem(d.data[k], input[k]))
-      if (primitiveTmp.args.length > 1) primitiveTmp.prim = 'Pair'
-      if (primitiveTmp.args.length > 1 || !(Object.keys(d.data).length - 1 > i))
-        primitive.args.push(primitiveTmp)
-    })
-    if (primitive.args.length > 1) primitive.prim = 'Pair'
-    return primitive
+    return encodeToPair(
+      Object.keys(d.data)
+        .sort()
+        .map(k => d.data[k]),
+      Object.keys(d.data)
+        .sort()
+        .map(k => input[k])
+    )
   } else {
     throw AbiEncodeError.from(d)
   }
@@ -70,7 +74,7 @@ export function encodeInnerToPrimitiveItem(
  * @param arg Micheline data
  */
 function decodeArgs(list: Array<any>, arg: any) {
-  if (implementsPrimitive(arg)) {
+  if (isMichelinePrim(arg)) {
     arg.args.map((item: any) => decodeArgs(list, item))
   } else if (arg instanceof Array) {
     arg.map((item: any) => list.push(item))
@@ -120,8 +124,8 @@ const TzCoder: Coder = {
    * @param input codable object to encode
    */
   encode(input: Codable): Bytes {
-    const primitiveItem = encodeInnerToPrimitiveItem(input, input.raw)
-    return encodeToMicheline(primitiveItem)
+    const MichelinePrimItem = encodeInnerToMichelinePrimItem(input, input.raw)
+    return encodeToMicheline(MichelinePrimItem)
   },
   /**
    * decode given Micheline string into given codable object

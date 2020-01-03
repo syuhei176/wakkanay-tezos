@@ -29,7 +29,7 @@ describe('TzCoder', () => {
         greet: Bytes.fromString('hello')
       })
       expect(TzCoder.encode(struct).intoString()).toBe(
-        '{ "prim": "Pair", "args": [ { "prim": "Pair", "args": [ { "int": "5" }, { "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" } ] }, { "string": "hello" } ] }'
+        '{ "prim": "Pair", "args": [ { "prim": "Pair", "args": [ { "string": "tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va" }, { "string": "hello" } ] }, { "int": "5" } ] }'
       )
     })
 
@@ -77,7 +77,7 @@ describe('TzCoder', () => {
         })
       ])
       expect(TzCoder.encode(list).intoString()).toBe(
-        '[ { "prim": "Pair", "args": [ { "int": "1" }, { "string": "hello" } ] }, { "prim": "Pair", "args": [ { "int": "2" }, { "string": "hello" } ] } ]'
+        '[ { "prim": "Pair", "args": [ { "string": "hello" }, { "int": "1" } ] }, { "prim": "Pair", "args": [ { "string": "hello" }, { "int": "2" } ] } ]'
       )
     })
 

@@ -1,20 +1,20 @@
 import { types } from 'wakkanay'
 import Bytes = types.Bytes
 
-export interface Primitive {
+export interface MichelinePrim {
   prim: string
-  args: PrimitiveItem[]
+  args: MichelinePrimItem[]
 }
-export interface PrimitiveNumber {
+export interface MichelineNumber {
   number: number
 }
-export interface PrimitiveString {
+export interface MichelineString {
   string: string
 }
-export type PrimitiveItem =
-  | Primitive
-  | PrimitiveNumber
-  | PrimitiveString
+export type MichelinePrimItem =
+  | MichelinePrim
+  | MichelineNumber
+  | MichelineString
   | any[]
 
 const PRIM_PAIR_START = '{ "prim": "Pair", "args": [ '
@@ -22,26 +22,26 @@ const PRIM_PAIR_END = ' ] }'
 const LIST_START = '[ '
 const LIST_END = ' ]'
 
-export function implementsString(arg: any): arg is PrimitiveString {
+export function isMichelineString(arg: any): arg is MichelineString {
   return (
     arg !== null && typeof arg === 'object' && typeof arg.string === 'string'
   )
 }
-export function implementsNumber(arg: any): arg is PrimitiveNumber {
+export function isMichelineNumber(arg: any): arg is MichelineNumber {
   return (
     arg !== null && typeof arg === 'object' && typeof arg.number === 'number'
   )
 }
-export function implementsPrimitive(arg: any): arg is Primitive {
+export function isMichelinePrim(arg: any): arg is MichelinePrim {
   return arg !== null && typeof arg === 'object' && typeof arg.args === 'object'
 }
 
-function encodeItemToMicheline(arg: PrimitiveItem): string {
-  if (implementsString(arg)) {
+function encodeItemToMicheline(arg: MichelinePrimItem): string {
+  if (isMichelineString(arg)) {
     return `{ "string": "${arg.string}" }`
-  } else if (implementsNumber(arg)) {
+  } else if (isMichelineNumber(arg)) {
     return `{ "int": "${arg.number}" }`
-  } else if (implementsPrimitive(arg)) {
+  } else if (isMichelinePrim(arg)) {
     let code = ''
     arg.args.map((item: any, i: number) => {
       if (arg.args.length - 1 > i && arg.prim === 'Pair')
@@ -60,7 +60,7 @@ function encodeItemToMicheline(arg: PrimitiveItem): string {
   }
 }
 
-export function encodeToMicheline(pairItem: PrimitiveItem): Bytes {
+export function encodeToMicheline(pairItem: MichelinePrimItem): Bytes {
   let code = ''
   if (pairItem instanceof Array) {
     const length = pairItem.length
