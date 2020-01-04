@@ -1,10 +1,7 @@
 import { coder, types } from 'wakkanay'
 import Coder = coder.Coder
 import Codable = types.Codable
-import Address = types.Address
 import Bytes = types.Bytes
-import Integer = types.Integer
-import BigNumber = types.BigNumber
 import List = types.List
 import Tuple = types.Tuple
 import Struct = types.Struct
@@ -35,29 +32,26 @@ export function encodeInnerToMichelinePrimItems(
   d: Codable,
   input: any
 ): MichelinePrimItems {
-  if (d instanceof Integer) {
+  const c = d.constructor.name
+  if (c === 'Integer') {
     return { int: input }
-  } else if (d instanceof BigNumber) {
+  } else if (c === 'BigNumber') {
     return { string: input }
-  } else if (d instanceof Address) {
+  } else if (c === 'Address') {
     return { string: input }
-  } else if (d instanceof Bytes) {
+  } else if (c === 'Bytes') {
     return { string: Bytes.from(input).intoString() }
-  } else if (d instanceof List) {
+  } else if (c === 'List') {
     return input.map((item: any) =>
-      encodeInnerToMichelinePrimItems(d.getC().default(), item)
+      encodeInnerToMichelinePrimItems(
+        (d as List<Codable>).getC().default(),
+        item
+      )
     )
-  } else if (d instanceof Tuple) {
-    return encodeToPair(d.data, input)
-  } else if (d instanceof Struct) {
-    return encodeToPair(
-      Object.keys(d.data)
-        .sort()
-        .map(k => d.data[k]),
-      Object.keys(d.data)
-        .sort()
-        .map(k => input[k])
-    )
+  } else if (c === 'Tuple') {
+    return encodeToPair((d as Tuple).data, input)
+  } else if (c === 'Struct') {
+    return encodeToPair((d as Struct).data.map(item => item.value), input)
   } else {
     throw AbiEncodeError.from(d)
   }
@@ -80,32 +74,33 @@ function decodeArgs(arg: MichelinePrimItems): MichelinePrimItems[] {
   }
 }
 export function decodeInner(d: Codable, input: any): Codable {
-  if (d instanceof Integer) {
+  const c = d.constructor.name
+  if (c === 'Integer') {
     d.setData(Number(input.int))
-  } else if (d instanceof BigNumber) {
+  } else if (c === 'BigNumber') {
     d.setData(BigInt(input.string))
-  } else if (d instanceof Address) {
+  } else if (c === 'Address') {
     d.setData(input.string)
-  } else if (d instanceof Bytes) {
+  } else if (c === 'Bytes') {
     d.setData(Bytes.fromString(input.string).data)
-  } else if (d instanceof List) {
+  } else if (c === 'List') {
     d.setData(
       input.map((item: any) => {
-        const di = d.getC().default()
+        const di = (d as List<Codable>).getC().default()
         decodeInner(di, item)
         return di
       })
     )
-  } else if (d instanceof Tuple) {
+  } else if (c === 'Tuple') {
     const list: MichelinePrimItems[] = decodeArgs(input)
-    d.setData(d.data.map((d, i) => decodeInner(d, list[i])))
-  } else if (d instanceof Struct) {
+    d.setData((d as Tuple).data.map((di, i) => decodeInner(di, list[i])))
+  } else if (c === 'Struct') {
     const list: MichelinePrimItems[] = decodeArgs(input)
-    const data: { [key: string]: Codable } = {}
-    Object.keys(d.data).forEach((k, i) => {
-      data[k] = decodeInner(d.data[k], list[i])
-    })
-    d.setData(data)
+    d.setData(
+      (d as Struct).data.map(({ key, value }, i) => {
+        return { key: key, value: decodeInner(value, list[i]) }
+      })
+    )
   } else {
     throw AbiDecodeError.from(d)
   }

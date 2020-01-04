@@ -23,11 +23,14 @@ describe('TzCoder', () => {
     })
 
     test('encode Struct', () => {
-      const struct = Struct.from({
-        num: Integer.from(5),
-        addr: Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va'),
-        greet: Bytes.fromString('hello')
-      })
+      const struct = Struct.from([
+        {
+          key: 'addr',
+          value: Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
+        },
+        { key: 'greet', value: Bytes.fromString('hello') },
+        { key: 'num', value: Integer.from(5) }
+      ])
       expect(TzCoder.encode(struct).intoString()).toBe(
         '{"prim":"Pair","args":[{"prim":"Pair","args":[{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"},{"string":"hello"}]},{"int":"5"}]}'
       )
@@ -61,20 +64,20 @@ describe('TzCoder', () => {
     test('encode List of Struct', () => {
       const factory = {
         default: () =>
-          Struct.from({
-            num: Integer.default(),
-            greet: Bytes.default()
-          })
+          Struct.from([
+            { key: 'greet', value: Bytes.default() },
+            { key: 'num', value: Integer.default() }
+          ])
       }
       const list = List.from(factory, [
-        Struct.from({
-          num: Integer.from(1),
-          greet: Bytes.fromString('hello')
-        }),
-        Struct.from({
-          num: Integer.from(2),
-          greet: Bytes.fromString('hello')
-        })
+        Struct.from([
+          { key: 'greet', value: Bytes.fromString('hello') },
+          { key: 'num', value: Integer.from(1) }
+        ]),
+        Struct.from([
+          { key: 'greet', value: Bytes.fromString('hello') },
+          { key: 'num', value: Integer.from(2) }
+        ])
       ])
       expect(TzCoder.encode(list).intoString()).toBe(
         '[{"prim":"Pair","args":[{"string":"hello"},{"int":"1"}]},{"prim":"Pair","args":[{"string":"hello"},{"int":"2"}]}]'
@@ -124,17 +127,23 @@ describe('TzCoder', () => {
       const b = Bytes.fromString(
         '{"prim":"Pair","args":[{"prim":"Pair","args":[{"int": "5"},{"string":"tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va"}]},{"string":"hello"}]}'
       )
-      const t = Struct.from({
-        num: Integer.default(),
-        addr: Address.default(),
-        greet: Bytes.default()
-      })
+      const t = Struct.from([
+        { key: 'num', value: Integer.default() },
+        { key: 'addr', value: Address.default() },
+        { key: 'greet', value: Bytes.default() }
+      ])
       expect(TzCoder.decode(t, b)).toStrictEqual(
-        Struct.from({
-          num: Integer.from(5),
-          addr: Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va'),
-          greet: Bytes.from(new Uint8Array([104, 101, 108, 108, 111]))
-        })
+        Struct.from([
+          { key: 'num', value: Integer.from(5) },
+          {
+            key: 'addr',
+            value: Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
+          },
+          {
+            key: 'greet',
+            value: Bytes.fromString('hello')
+          }
+        ])
       )
     })
 
@@ -186,31 +195,31 @@ describe('TzCoder', () => {
     test('decode List of Struct', () => {
       const factory = {
         default: () =>
-          Struct.from({
-            num: Integer.default(),
-            greet: Bytes.default()
-          })
+          Struct.from([
+            { key: 'num', value: Integer.default() },
+            { key: 'greet', value: Bytes.default() }
+          ])
       }
       const b = Bytes.fromString(
         '[{"prim":"Pair","args":[{"int":"1"},{"string":"hello"}]},{"prim":"Pair","args":[{"int":"2"},{"string":"hello"}]}]'
       )
       const t = List.default(
         factory,
-        Struct.from({
-          num: Integer.default(),
-          greet: Bytes.default()
-        })
+        Struct.from([
+          { key: 'num', value: Integer.default() },
+          { key: 'greet', value: Bytes.default() }
+        ])
       )
       expect(TzCoder.decode(t, b)).toStrictEqual(
         List.from(factory, [
-          Struct.from({
-            num: Integer.from(1),
-            greet: Bytes.fromString('hello')
-          }),
-          Struct.from({
-            num: Integer.from(2),
-            greet: Bytes.fromString('hello')
-          })
+          Struct.from([
+            { key: 'num', value: Integer.from(1) },
+            { key: 'greet', value: Bytes.fromString('hello') }
+          ]),
+          Struct.from([
+            { key: 'num', value: Integer.from(2) },
+            { key: 'greet', value: Bytes.fromString('hello') }
+          ])
         ])
       )
     })
