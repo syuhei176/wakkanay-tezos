@@ -62,10 +62,10 @@ export default class EventWatcher implements IEventWatcher {
       )
       // TODO: enter the topic
       // ethereum topic is the contract address
-      const loaded = await this.eventDb.getLastLoggedBlock(
+      const latestBlock = await this.eventDb.getLastLoggedBlock(
         Bytes.fromString('topic')
       )
-      await this.poll(loaded + 1, block.level, handler)
+      await this.poll(latestBlock + 1, block.level, handler)
     } catch (e) {
       console.log(e)
       if (errorHandler) {

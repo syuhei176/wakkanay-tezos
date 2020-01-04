@@ -1,1 +1,1 @@
-export * from './TezEventWatcher'
+export * from './TzEventWatcher'
