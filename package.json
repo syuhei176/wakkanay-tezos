@@ -18,10 +18,12 @@
     "build": "tsc --build ./tsconfig.json",
     "test": "jest",
     "lint": "eslint --ext ts,tsx src",
+    "fmt": "prettier --write 'src/**/*.ts' '__tests__/**/*.ts'",
     "prepare": "npm run build"
   },
   "dependencies": {
-    "wakkanay": "git+https://github.com/cryptoeconomicslab/wakkanay.git"
+    "conseiljs": "^0.3.1",
+    "wakkanay": "git+https://github.com/cryptoeconomicslab/wakkanay.git#master"
   },
   "devDependencies": {
     "@types/jest": "^24.0.20",
@@ -36,7 +38,13 @@
     "prettier": "^1.18.2",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
+    "husky": "^3.1.0",
     "typescript": "^3.6.4"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run fmt"
+    }
   },
   "jest": {
     "transform": {
