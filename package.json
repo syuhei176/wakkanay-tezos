@@ -23,9 +23,11 @@
   },
   "dependencies": {
     "conseiljs": "^0.3.1",
+    "lodash.flattendeep": "^4.4.0",
     "wakkanay": "git+https://github.com/cryptoeconomicslab/wakkanay.git#master"
   },
   "devDependencies": {
+    "@types/lodash.flattendeep": "^4.4.6",
     "@types/jest": "^24.0.20",
     "@types/libsodium-wrappers-sumo": "^0.7.3",
     "@types/node": "^12.12.9",
