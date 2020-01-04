@@ -19,9 +19,8 @@ export class ContractHelper {
    * get optimal fee
    */
   public async estimateFee(
-    operationKindType?: OperationKindType
+    operationKindType: OperationKindType = OperationKindType.Transaction
   ): Promise<number> {
-    if (!operationKindType) operationKindType = OperationKindType.Transaction
     const result = await TezosConseilClient.getFeeStatistics(
       this.tzWallet.conseilServerInfo,
       this.tzWallet.conseilServerInfo.network,
@@ -39,7 +38,8 @@ export class ContractHelper {
     entrypoint: string,
     params: string,
     storageLimit: number = DefaultTransactionStorageLimit,
-    gasLimit: number = DefaultTransactionGasLimit
+    gasLimit: number = DefaultTransactionGasLimit,
+    parameterFormat: TezosParameterFormat = TezosParameterFormat.Micheline
   ): Promise<OperationResult> {
     // BIP44 Derivation Path if signed with hardware, empty if signed with software
     const derivationPath = ''
@@ -56,7 +56,7 @@ export class ContractHelper {
       gasLimit,
       entrypoint,
       params,
-      TezosParameterFormat.Michelson
+      parameterFormat
     )
 
     return result
