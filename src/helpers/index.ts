@@ -1,1 +1,2 @@
-export * from './ContractHelper'
+export * from './BlockInfoProvider'
+export * from './ContractManager'

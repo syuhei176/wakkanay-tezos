@@ -1,4 +1,3 @@
-import * as ethers from 'ethers'
 import { db, events, types } from 'wakkanay'
 import EventDb = events.EventDb
 import KeyValueStore = db.KeyValueStore
@@ -6,46 +5,37 @@ import IEventWatcher = events.IEventWatcher
 import EventHandler = events.EventHandler
 import ErrorHandler = events.ErrorHandler
 import CompletedHandler = events.CompletedHandler
+import Address = types.Address
 import Bytes = types.Bytes
-type JsonRpcProvider = ethers.providers.JsonRpcProvider
-
-import {
-  ConseilServerInfo,
-  CryptoUtils,
-  KeyStore,
-  TezosConseilClient,
-  TezosMessageUtils
-} from 'conseiljs'
+import { ConseilServerInfo, TezosConseilClient } from 'conseiljs'
+import { BlockInfoProvider } from '../helpers'
 
 export interface EventWatcherOptions {
   interval: number
 }
 
 export type TezEventWatcherArgType = {
-  endpoint: string
+  conseilServerInfo: ConseilServerInfo
   kvs: KeyValueStore
-  contractAddress: string
-  contractInterface: ethers.utils.Interface
+  contractAddress: Address
   options: EventWatcherOptions
 }
 
 export default class EventWatcher implements IEventWatcher {
-  public httpProvider: JsonRpcProvider
+  public blockInfoProvider: BlockInfoProvider
   public eventDb: EventDb
   public checkingEvents: Map<string, EventHandler>
   public options: EventWatcherOptions
   public timer?: number
-  public contractAddress: string
-  public contractInterface: ethers.utils.Interface
+  public contractAddress: Address
 
   constructor({
-    endpoint,
+    conseilServerInfo,
     kvs,
     contractAddress,
-    contractInterface,
     options
   }: TezEventWatcherArgType) {
-    this.httpProvider = new ethers.providers.JsonRpcProvider(endpoint)
+    this.blockInfoProvider = new BlockInfoProvider(conseilServerInfo)
     this.eventDb = new EventDb(kvs)
     this.checkingEvents = new Map<string, EventHandler>()
     this.options = {
@@ -53,7 +43,6 @@ export default class EventWatcher implements IEventWatcher {
       ...options
     }
     this.contractAddress = contractAddress
-    this.contractInterface = contractInterface
   }
 
   public subscribe(event: string, handler: EventHandler) {
@@ -67,21 +56,23 @@ export default class EventWatcher implements IEventWatcher {
 
   public async start(handler: CompletedHandler, errorHandler?: ErrorHandler) {
     try {
-      //TODO
-      // getBlockHead https://github.com/Cryptonomic/ConseilJS/blob/f189bc1d8aafa33db2d5beb587711faadfb51e50/src/reporting/tezos/TezosConseilClient.ts#L31-L42
-      const block = await this.httpProvider.getBlock('latest')
-
-      const loaded = await this.eventDb.getLastLoggedBlock(
-        Bytes.fromString(this.contractAddress)
+      const block = await TezosConseilClient.getBlockHead(
+        this.blockInfoProvider.conseilServerInfo,
+        this.blockInfoProvider.conseilServerInfo.network
       )
-      await this.poll(loaded, block.number, handler)
+      // TODO: enter the topic
+      // ethereum topic is the contract address
+      const loaded = await this.eventDb.getLastLoggedBlock(
+        Bytes.fromString('topic')
+      )
+      await this.poll(loaded + 1, block.level, handler)
     } catch (e) {
       console.log(e)
       if (errorHandler) {
         errorHandler(e)
       }
     }
-    this.timer = setTimeout(async () => {
+    this.timer = window.setTimeout(async () => {
       await this.start(handler, errorHandler)
     }, this.options.interval)
   }
@@ -97,46 +88,41 @@ export default class EventWatcher implements IEventWatcher {
     blockNumber: number,
     completedHandler: CompletedHandler
   ) {
-    // TODO
-    // TezosNodeReader.getLogs()
-    // performGetRequest(server, `chains/${chainid}/blocks/${blockHash}/${blockHash}>/context/contracts/${accountHash}/storage`).logs
-    // ref1 https://tezos.stackexchange.com/a/1359
-    // ref2 https://github.com/Cryptonomic/ConseilJS/blob/f189bc1d8aafa33db2d5beb587711faadfb51e50/src/chain/tezos/TezosNodeReader.ts#L46-L48
-    // ref3 https://tezos.gitlab.io/tezos/api/rpc.html#get-block-id-context-contracts-contract-id-storage
-    const events = await this.httpProvider.getLogs({//TODO
-      address: this.contractAddress,
-      fromBlock: fromBlockNumber,
-      toBlock: blockNumber
-    })
-
-    const filtered = events
-      .filter(async e => {
-        if (e.transactionHash) {
-          const seen = await this.eventDb.getSeen(
-            Bytes.fromHexString(e.transactionHash)
-          )
-          return !seen
-        } else {
-          return false
-        }
-      })
-      .map(e => {
-        const logDesc = this.contractInterface.parseLog(e)
-        const handler = this.checkingEvents.get(logDesc.name)
-        if (handler) {
-          handler(logDesc)
-        }
-        if (e.transactionHash) {
-          this.eventDb.addSeen(Bytes.fromHexString(e.transactionHash))
-        }
-        return true
-      })
-    await this.eventDb.setLastLoggedBlock(
-      Bytes.fromString(this.contractAddress),
-      blockNumber
-    )
-    if (filtered.length > 0) {
-      completedHandler()
+    for (let i = fromBlockNumber; i < blockNumber; i++) {
+      const events = await this.blockInfoProvider.getContractStorage(
+        i,
+        this.contractAddress
+      )
+      // TODO: filter the events
+      /**
+      const filtered = events
+        .filter(async e => {
+          if (e.transactionHash) {
+            const seen = await this.eventDb.getSeen(
+              Bytes.fromHexString(e.transactionHash)
+            )
+            return !seen
+          } else {
+            return false
+          }
+        })
+        .map(e => {
+          const logDesc = this.contractInterface.parseLog(e)
+          const handler = this.checkingEvents.get(logDesc.name)
+          if (handler) {
+            handler(logDesc)
+          }
+          if (e.transactionHash) {
+            this.eventDb.addSeen(Bytes.fromHexString(e.transactionHash))
+          }
+          return true
+        })
+      */
+      await this.eventDb.setLastLoggedBlock(
+        Bytes.fromString(this.contractAddress.toString()),
+        blockNumber
+      )
     }
+    completedHandler()
   }
 }

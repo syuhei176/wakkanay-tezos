@@ -12,7 +12,7 @@ import { TzWallet } from '../wallet'
 export const DefaultTransactionStorageLimit = 300
 export const DefaultTransactionGasLimit = 10600
 
-export class ContractHelper {
+export class ContractManager {
   constructor(readonly tzWallet: TzWallet, readonly contractAddress: Address) {}
 
   /**
