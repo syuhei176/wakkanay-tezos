@@ -26,7 +26,7 @@ export default class EventWatcher implements IEventWatcher {
   public eventDb: EventDb
   public checkingEvents: Map<string, EventHandler>
   public options: EventWatcherOptions
-  public timer?: number
+  public timer?: NodeJS.Timeout
   public contractAddress: Address
 
   constructor({
@@ -72,7 +72,7 @@ export default class EventWatcher implements IEventWatcher {
         errorHandler(e)
       }
     }
-    this.timer = window.setTimeout(async () => {
+    this.timer = setTimeout(async () => {
       await this.start(handler, errorHandler)
     }, this.options.interval)
   }
