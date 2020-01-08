@@ -17,7 +17,7 @@ export interface EventWatcherOptions {
 export type TezEventWatcherArgType = {
   conseilServerInfo: ConseilServerInfo
   kvs: KeyValueStore
-  contractAddress: Address
+  contractAddress: string
   options: EventWatcherOptions
 }
 
@@ -27,7 +27,7 @@ export default class EventWatcher implements IEventWatcher {
   public checkingEvents: Map<string, EventHandler>
   public options: EventWatcherOptions
   public timer?: number
-  public contractAddress: Address
+  public contractAddress: string
 
   constructor({
     conseilServerInfo,
@@ -88,13 +88,15 @@ export default class EventWatcher implements IEventWatcher {
     blockNumber: number,
     completedHandler: CompletedHandler
   ) {
-    for (let i = fromBlockNumber; i < blockNumber; i++) {
-      const events = await this.blockInfoProvider.getContractStorage(
-        i,
-        this.contractAddress
-      )
-      // TODO: filter the events
-      /**
+    const events = await this.blockInfoProvider.getContractStorage(
+      fromBlockNumber,
+      blockNumber,
+      this.contractAddress
+    )
+    console.log(events)
+    // for (let i = fromBlockNumber; i < blockNumber; i++) {
+    // TODO: filter the events
+    /**
       const filtered = events
         .filter(async e => {
           if (e.transactionHash) {
@@ -118,11 +120,11 @@ export default class EventWatcher implements IEventWatcher {
           return true
         })
       */
-      await this.eventDb.setLastLoggedBlock(
-        Bytes.fromString(this.contractAddress.toString()),
-        blockNumber
-      )
-    }
+    //}
+    await this.eventDb.setLastLoggedBlock(
+      Bytes.fromString(this.contractAddress.toString()),
+      blockNumber
+    )
     completedHandler()
   }
 }
