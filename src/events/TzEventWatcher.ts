@@ -88,15 +88,15 @@ export default class EventWatcher implements IEventWatcher {
     blockNumber: number,
     completedHandler: CompletedHandler
   ) {
-    const events = await this.blockInfoProvider.getContractStorage(
-      fromBlockNumber,
-      blockNumber,
-      this.contractAddress
-    )
-    console.log(events)
-    // for (let i = fromBlockNumber; i < blockNumber; i++) {
-    // TODO: filter the events
-    /**
+    for (let i = fromBlockNumber; i < blockNumber; i++) {
+      const events = await this.blockInfoProvider.getContractStorage(
+        i,
+        this.contractAddress
+      )
+      console.log(events)
+
+      // TODO: filter the events
+      /**
       const filtered = events
         .filter(async e => {
           if (e.transactionHash) {
@@ -120,7 +120,7 @@ export default class EventWatcher implements IEventWatcher {
           return true
         })
       */
-    //}
+    }
     await this.eventDb.setLastLoggedBlock(
       Bytes.fromString(this.contractAddress.toString()),
       blockNumber

@@ -12,7 +12,7 @@ describe('TzEventWatcher', () => {
     it('succeed to poll events', async () => {
       const eventWatcher = new EventWatcher({
         conseilServerInfo: {
-          url: 'https://conseil-dev.cryptonomic-infra.tech',
+          url: 'https://tezos-dev.cryptonomic-infra.tech',
           apiKey: 'hooman',
           network: 'babylonnet'
         },
@@ -20,7 +20,7 @@ describe('TzEventWatcher', () => {
         contractAddress: 'KT1T2Zy4THwShihhqsaFWTubUVnFmjddHzew',
         options: { interval: 1000 }
       })
-      await eventWatcher.poll(0, 100, () => {})
+      await eventWatcher.poll(193552, 193555, () => {})
       // expect(signature).toBeTruthy()
     })
   })
