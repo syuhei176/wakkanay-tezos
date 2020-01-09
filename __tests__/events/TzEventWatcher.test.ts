@@ -4,6 +4,7 @@ import { db, types } from 'wakkanay'
 import { Address } from 'wakkanay/dist/types'
 import { KeyValueStore } from 'wakkanay/dist/db'
 import { MockBlockInfoProvider } from './MockBlockInfoProvider'
+import EventLog from 'wakkanay/dist/events/types/EventLog'
 
 describe('TzEventWatcher', () => {
   let kvs: KeyValueStore
@@ -25,13 +26,13 @@ describe('TzEventWatcher', () => {
         options: { interval: 1000 },
         blockInfoProvider: new MockBlockInfoProvider(conseilServerInfo)
       })
-      eventWatcher.subscribe('BlockSubmitted', event => {
-        expect(event).toEqual({
-          name: 'BlockSubmitted',
-          values: [{ int: 0 }, { string: 'root' }]
-        })
-      })
+      const handler = jest.fn()
+      eventWatcher.subscribe('BlockSubmitted', handler)
       await eventWatcher.poll(196527, 196530, () => {})
+      expect(handler).toHaveBeenCalledWith({
+        name: 'BlockSubmitted',
+        values: [{ int: 0 }, { string: 'root' }]
+      })
     })
   })
 })
