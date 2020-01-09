@@ -32,7 +32,7 @@ describe('TzEventWatcher', () => {
       await eventWatcher.poll(196527, 196530, () => {})
       expect(handler).toHaveBeenCalledWith({
         name: 'BlockSubmitted',
-        values: [{ int: 0 }, { string: 'root' }]
+        values: [{ int: '0' }, { string: 'root' }]
       })
       expect(handler).toHaveBeenCalledTimes(1)
       await eventWatcher.poll(196527, 196530, () => {})

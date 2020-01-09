@@ -44,7 +44,7 @@ export const testEventStorage: MichelinePrim = {
                                               string:
                                                 'tz1TGu6TN5GSez2ndXXeDX6LgUDvLzPLqgYV'
                                             },
-                                            { int: 1 }
+                                            { int: '1' }
                                           ]
                                         },
                                         {
@@ -57,7 +57,7 @@ export const testEventStorage: MichelinePrim = {
                                                   {
                                                     prim: 'Elt',
                                                     args: [
-                                                      { int: 0 },
+                                                      { int: '0' },
                                                       { string: 'hoge' }
                                                     ]
                                                   }
@@ -70,7 +70,7 @@ export const testEventStorage: MichelinePrim = {
                                             },
                                             {
                                               prim: 'Pair',
-                                              args: [{ int: 1 }, { int: 1 }]
+                                              args: [{ int: '1' }, { int: '1' }]
                                             }
                                           ]
                                         }
@@ -78,7 +78,7 @@ export const testEventStorage: MichelinePrim = {
                                     },
                                     {
                                       prim: 'Pair',
-                                      args: [{ int: 1 }, { int: 1 }]
+                                      args: [{ int: '1' }, { int: '1' }]
                                     }
                                   ]
                                 }
@@ -95,7 +95,7 @@ export const testEventStorage: MichelinePrim = {
                                   args: [
                                     {
                                       prim: 'Pair',
-                                      args: [{ int: 1 }, { int: 1 }]
+                                      args: [{ int: '1' }, { int: '1' }]
                                     },
                                     {
                                       prim: 'Pair',
@@ -104,7 +104,7 @@ export const testEventStorage: MichelinePrim = {
                                           {
                                             prim: 'Elt',
                                             args: [
-                                              { int: 0 },
+                                              { int: '0' },
                                               { string: 'hoge' }
                                             ]
                                           }
@@ -129,15 +129,15 @@ export const testEventStorage: MichelinePrim = {
                             {
                               prim: 'Elt',
                               args: [
-                                { int: 0 },
+                                { int: '0' },
                                 {
                                   prim: 'Pair',
-                                  args: [{ int: 0 }, { int: 0 }]
+                                  args: [{ int: '0' }, { int: '0' }]
                                 }
                               ]
                             }
                           ],
-                          { int: 0 }
+                          { int: '0' }
                         ]
                       }
                     ]
@@ -145,13 +145,13 @@ export const testEventStorage: MichelinePrim = {
                 ]
               }
             ],
-            [{ prim: 'Elt', args: [{ int: 0 }, { string: 'root' }] }]
+            [{ prim: 'Elt', args: [{ int: '0' }, { string: 'root' }] }]
           ]
         },
         {
           prim: 'Pair',
           args: [
-            { int: 0 },
+            { int: '0' },
             {
               prim: 'Pair',
               args: [
@@ -164,13 +164,13 @@ export const testEventStorage: MichelinePrim = {
                         {
                           prim: 'Pair',
                           args: [
-                            { int: 0 },
+                            { int: '0' },
                             {
                               prim: 'Right',
                               args: [
                                 {
                                   prim: 'Pair',
-                                  args: [{ int: 0 }, { string: 'root' }]
+                                  args: [{ int: '0' }, { string: 'root' }]
                                 }
                               ]
                             }

@@ -1,5 +1,5 @@
 export interface MichelineNumber {
-  int: number
+  int: string
 }
 export interface MichelineString {
   string: string
