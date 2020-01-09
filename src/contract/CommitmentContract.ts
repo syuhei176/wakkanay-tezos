@@ -22,6 +22,10 @@ export class CommitmentContract implements ICommitmentContract {
     throw new Error('Not implemented')
   }
 
+  async getRoot(blockNumber: BigNumber): Promise<Bytes> {
+    throw new Error('Not implemented')
+  }
+
   // TODO: add implementation
   subscribeBlockSubmitted(
     handler: (blockNumber: BigNumber, root: Bytes) => void
