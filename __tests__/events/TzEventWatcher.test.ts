@@ -26,10 +26,25 @@ describe('TzEventWatcher', () => {
         blockInfoProvider: new MockBlockInfoProvider(conseilServerInfo)
       })
       eventWatcher.subscribe('BlockSubmitted', event => {
-        console.log(JSON.stringify(event))
+        expect(event).toEqual({
+          name: 'BlockSubmitted',
+          values: [
+            {
+              prim: 'Pair',
+              args: [
+                { int: 0 },
+                {
+                  prim: 'Right',
+                  args: [
+                    { prim: 'Pair', args: [{ int: 0 }, { string: 'root' }] }
+                  ]
+                }
+              ]
+            }
+          ]
+        })
       })
       await eventWatcher.poll(196527, 196530, () => {})
-      // expect(signature).toBeTruthy()
     })
   })
 })
