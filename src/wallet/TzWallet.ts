@@ -10,7 +10,7 @@ import {
   TezosConseilClient,
   TezosMessageUtils
 } from 'conseiljs'
-import { ContractHelper } from '../helpers'
+import { ContractManager } from '../helpers'
 
 export class TzWallet implements IWallet {
   constructor(
@@ -65,8 +65,8 @@ export class TzWallet implements IWallet {
   /**
    * Get contract helper instance which connecting by this wallet
    */
-  public getConnection(contractAddress: Address): ContractHelper {
-    const contractHelper = new ContractHelper(this, contractAddress)
-    return contractHelper
+  public getConnection(contractAddress: Address): ContractManager {
+    const contractManager = new ContractManager(this, contractAddress)
+    return contractManager
   }
 }

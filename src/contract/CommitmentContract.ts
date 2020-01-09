@@ -1,10 +1,10 @@
 import { Bytes, BigNumber } from 'wakkanay/dist/types/Codables'
 import { contract } from 'wakkanay'
 import ICommitmentContract = contract.ICommitmentContract
-import { ContractHelper } from '../helpers'
+import { ContractManager } from '../helpers'
 
 export class CommitmentContract implements ICommitmentContract {
-  constructor(readonly connection: ContractHelper) {}
+  constructor(readonly connection: ContractManager) {}
 
   /**
    * submit block
@@ -19,6 +19,10 @@ export class CommitmentContract implements ICommitmentContract {
 
   // TODO: add implementation
   async getCurrentBlock(): Promise<BigNumber> {
+    throw new Error('Not implemented')
+  }
+
+  async getRoot(blockNumber: BigNumber): Promise<Bytes> {
     throw new Error('Not implemented')
   }
 

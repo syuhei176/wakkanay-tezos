@@ -24,7 +24,7 @@
   "dependencies": {
     "conseiljs": "^0.3.1",
     "lodash.flattendeep": "^4.4.0",
-    "wakkanay": "git+https://github.com/cryptoeconomicslab/wakkanay.git#master"
+    "wakkanay": "github:cryptoeconomicslab/wakkanay"
   },
   "devDependencies": {
     "@types/lodash.flattendeep": "^4.4.6",
