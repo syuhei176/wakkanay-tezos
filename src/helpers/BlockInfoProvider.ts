@@ -9,13 +9,22 @@ import {
   TezosMessageUtils,
   TezosNodeReader
 } from 'conseiljs'
+import { MichelinePrim } from '../coder'
 
 interface Script {
   code: any
-  storage: any
+  storage: MichelinePrim
 }
 
-export class BlockInfoProvider {
+export interface BlockInfoProvider {
+  readonly conseilServerInfo: ConseilServerInfo
+  getContractStorage(
+    level: number,
+    contractAddress: string
+  ): Promise<MichelinePrim>
+}
+
+export class TezosBlockInfoProvider implements BlockInfoProvider {
   constructor(readonly conseilServerInfo: ConseilServerInfo) {}
 
   async estimateFee(
@@ -32,7 +41,7 @@ export class BlockInfoProvider {
   async getContractStorage(
     level: number,
     contractAddress: string
-  ): Promise<object> {
+  ): Promise<MichelinePrim> {
     const contract = await TezosNodeReader.getAccountForBlock(
       this.conseilServerInfo.url,
       level.toString(),

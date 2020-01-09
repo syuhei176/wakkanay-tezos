@@ -7,8 +7,9 @@ import ErrorHandler = events.ErrorHandler
 import CompletedHandler = events.CompletedHandler
 import Address = types.Address
 import Bytes = types.Bytes
-import { ConseilServerInfo, TezosConseilClient } from 'conseiljs'
-import { BlockInfoProvider } from '../helpers'
+import { ConseilServerInfo, TezosConseilClient, CryptoUtils } from 'conseiljs'
+import { BlockInfoProvider, TezosBlockInfoProvider } from '../helpers'
+import { MichelinePrim, MichelineString } from '../coder'
 
 export interface EventWatcherOptions {
   interval: number
@@ -19,6 +20,7 @@ export type TezEventWatcherArgType = {
   kvs: KeyValueStore
   contractAddress: string
   options: EventWatcherOptions
+  blockInfoProvider?: BlockInfoProvider
 }
 
 export default class EventWatcher implements IEventWatcher {
@@ -33,9 +35,10 @@ export default class EventWatcher implements IEventWatcher {
     conseilServerInfo,
     kvs,
     contractAddress,
-    options
+    options,
+    blockInfoProvider = new TezosBlockInfoProvider(conseilServerInfo)
   }: TezEventWatcherArgType) {
-    this.blockInfoProvider = new BlockInfoProvider(conseilServerInfo)
+    this.blockInfoProvider = blockInfoProvider
     this.eventDb = new EventDb(kvs)
     this.checkingEvents = new Map<string, EventHandler>()
     this.options = {
@@ -89,42 +92,48 @@ export default class EventWatcher implements IEventWatcher {
     completedHandler: CompletedHandler
   ) {
     for (let i = fromBlockNumber; i < blockNumber; i++) {
-      const events = await this.blockInfoProvider.getContractStorage(
+      const storage = await this.blockInfoProvider.getContractStorage(
         i,
         this.contractAddress
       )
-      console.log(events)
+      const events = this.parseStorage(storage)
+      const getHash = (e: MichelinePrim) =>
+        Bytes.from(
+          Uint8Array.from(
+            CryptoUtils.simpleHash(Buffer.from(JSON.stringify(e), 'utf8'), 12)
+          )
+        )
 
-      // TODO: filter the events
-      /**
       const filtered = events
         .filter(async e => {
-          if (e.transactionHash) {
-            const seen = await this.eventDb.getSeen(
-              Bytes.fromHexString(e.transactionHash)
-            )
-            return !seen
-          } else {
-            return false
-          }
+          const seen = await this.eventDb.getSeen(getHash(e))
+          return !seen
         })
         .map(e => {
-          const logDesc = this.contractInterface.parseLog(e)
-          const handler = this.checkingEvents.get(logDesc.name)
+          const handler = this.checkingEvents.get(
+            (e.args[0] as MichelineString).string
+          )
           if (handler) {
-            handler(logDesc)
+            handler({
+              name: (e.args[0] as MichelineString).string,
+              values: e.args[1]
+            })
           }
-          if (e.transactionHash) {
-            this.eventDb.addSeen(Bytes.fromHexString(e.transactionHash))
-          }
+          this.eventDb.addSeen(getHash(e))
           return true
         })
-      */
     }
     await this.eventDb.setLastLoggedBlock(
       Bytes.fromString(this.contractAddress.toString()),
       blockNumber
     )
     completedHandler()
+  }
+
+  private parseStorage(storage: MichelinePrim): MichelinePrim[] {
+    // TODO: parse!!
+    const events = (((storage.args[0] as MichelinePrim)
+      .args[1] as MichelinePrim).args[1] as MichelinePrim).args
+    return events[0] as MichelinePrim[]
   }
 }
