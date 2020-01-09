@@ -15,7 +15,7 @@ export interface EventWatcherOptions {
   interval: number
 }
 
-export type TezEventWatcherArgType = {
+export type TzEventWatcherArgType = {
   conseilServerInfo: ConseilServerInfo
   kvs: KeyValueStore
   contractAddress: string
@@ -37,7 +37,7 @@ export default class EventWatcher implements IEventWatcher {
     contractAddress,
     options,
     blockInfoProvider = new TezosBlockInfoProvider(conseilServerInfo)
-  }: TezEventWatcherArgType) {
+  }: TzEventWatcherArgType) {
     this.blockInfoProvider = blockInfoProvider
     this.eventDb = new EventDb(kvs)
     this.checkingEvents = new Map<string, EventHandler>()

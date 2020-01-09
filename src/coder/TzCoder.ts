@@ -34,7 +34,7 @@ export function encodeInnerToMichelinePrimItem(
 ): MichelinePrimItem {
   const c = d.constructor.name
   if (c === 'Integer') {
-    return { int: input }
+    return { int: String(input) }
   } else if (c === 'BigNumber') {
     return { string: input }
   } else if (c === 'Address') {
@@ -113,16 +113,8 @@ const TzCoder: Coder = {
    * @param input codable object to encode
    */
   encode(input: Codable): Bytes {
-    const MichelinePrimItem = encodeInnerToMichelinePrimItem(input, input.raw)
-    return Bytes.fromString(
-      JSON.stringify(MichelinePrimItem, function(key, val) {
-        if (key === 'int') {
-          return val.toString()
-        } else {
-          return val
-        }
-      })
-    )
+    const michelinePrimItem = encodeInnerToMichelinePrimItem(input, input.raw)
+    return Bytes.fromString(JSON.stringify(michelinePrimItem))
   },
   /**
    * decode given Micheline string into given codable object
