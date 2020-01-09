@@ -7,31 +7,31 @@ import Tuple = types.Tuple
 import Struct = types.Struct
 import flattenDeep from 'lodash.flattendeep'
 import { AbiEncodeError, AbiDecodeError } from './Error'
-import { MichelinePrimItems, isMichelinePrim } from './MichelineTypes'
+import { MichelinePrimItem, isMichelinePrim } from './MichelineTypes'
 
 function encodeToPair(
   codables: Codable[],
   input: Tuple[] | Struct[]
-): MichelinePrimItems {
+): MichelinePrimItem {
   if (codables.length === 0) {
     throw new Error('Input codables have to have at least one element')
   } else if (codables.length === 1) {
-    return encodeInnerToMichelinePrimItems(codables[0], input[0])
+    return encodeInnerToMichelinePrimItem(codables[0], input[0])
   } else {
     const i = codables.length - 1
     return {
       prim: 'Pair',
       args: [
         encodeToPair(codables.slice(0, i), input.slice(0, i)),
-        encodeInnerToMichelinePrimItems(codables[i], input[i])
+        encodeInnerToMichelinePrimItem(codables[i], input[i])
       ]
-    } as MichelinePrimItems
+    } as MichelinePrimItem
   }
 }
-export function encodeInnerToMichelinePrimItems(
+export function encodeInnerToMichelinePrimItem(
   d: Codable,
   input: any
-): MichelinePrimItems {
+): MichelinePrimItem {
   const c = d.constructor.name
   if (c === 'Integer') {
     return { int: input }
@@ -43,7 +43,7 @@ export function encodeInnerToMichelinePrimItems(
     return { string: Bytes.from(input).intoString() }
   } else if (c === 'List') {
     return input.map((item: any) =>
-      encodeInnerToMichelinePrimItems(
+      encodeInnerToMichelinePrimItem(
         (d as List<Codable>).getC().default(),
         item
       )
@@ -62,13 +62,13 @@ export function encodeInnerToMichelinePrimItems(
  * @param list decoded data list
  * @param arg Micheline data
  */
-function decodeArgs(arg: MichelinePrimItems): MichelinePrimItems[] {
+function decodeArgs(arg: MichelinePrimItem): MichelinePrimItem[] {
   if (isMichelinePrim(arg)) {
     return flattenDeep(
-      arg.args.map((item: MichelinePrimItems) => decodeArgs(item))
+      arg.args.map((item: MichelinePrimItem) => decodeArgs(item))
     )
   } else if (arg instanceof Array) {
-    return arg.map((item: MichelinePrimItems) => item)
+    return arg.map((item: MichelinePrimItem) => item)
   } else {
     return [arg]
   }
@@ -92,10 +92,10 @@ export function decodeInner(d: Codable, input: any): Codable {
       })
     )
   } else if (c === 'Tuple') {
-    const list: MichelinePrimItems[] = decodeArgs(input)
+    const list: MichelinePrimItem[] = decodeArgs(input)
     d.setData((d as Tuple).data.map((di, i) => decodeInner(di, list[i])))
   } else if (c === 'Struct') {
-    const list: MichelinePrimItems[] = decodeArgs(input)
+    const list: MichelinePrimItem[] = decodeArgs(input)
     d.setData(
       (d as Struct).data.map(({ key, value }, i) => {
         return { key: key, value: decodeInner(value, list[i]) }
@@ -113,9 +113,9 @@ const TzCoder: Coder = {
    * @param input codable object to encode
    */
   encode(input: Codable): Bytes {
-    const michelinePrimItems = encodeInnerToMichelinePrimItems(input, input.raw)
+    const MichelinePrimItem = encodeInnerToMichelinePrimItem(input, input.raw)
     return Bytes.fromString(
-      JSON.stringify(michelinePrimItems, function(key, val) {
+      JSON.stringify(MichelinePrimItem, function(key, val) {
         if (key === 'int') {
           return val.toString()
         } else {

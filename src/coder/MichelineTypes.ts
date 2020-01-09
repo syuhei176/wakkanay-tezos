@@ -17,7 +17,6 @@ export type MichelinePrimItem =
   | MichelineNumber
   | MichelineString
   | MichelineBytes
-export type MichelinePrimItems = MichelinePrimItem | MichelinePrimItem[]
 
 export function isMichelinePrim(arg: any): arg is MichelinePrim {
   return arg !== null && typeof arg === 'object' && typeof arg.args === 'object'
