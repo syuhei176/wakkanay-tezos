@@ -92,32 +92,37 @@ export default class EventWatcher implements IEventWatcher {
     completedHandler: CompletedHandler
   ) {
     for (let i = fromBlockNumber; i < blockNumber; i++) {
-      const storage = await this.blockInfoProvider.getContractStorage(
-        i,
-        this.contractAddress
-      )
-      const events = this.parseStorage(storage)
-      events
-        .filter(async e => {
-          const seen = await this.eventDb.getSeen(this.getHash(e))
-          return !seen
-        })
-        .map(e => {
-          const eventName = (e.args[0] as MichelineString).string
-          const handler = this.checkingEvents.get(eventName)
-          if (handler) {
-            const args = e.args[1] as MichelinePrim[]
-            args.forEach(arg => {
-              handler({
-                name: eventName,
-                values: (((arg as MichelinePrim).args[1] as MichelinePrim)
-                  .args[0] as MichelinePrim).args
-              })
+      let events: MichelinePrim[]
+      try {
+        const storage = await this.blockInfoProvider.getContractStorage(
+          i,
+          this.contractAddress
+        )
+        events = this.parseStorage(storage)
+      } catch (e) {
+        events = []
+      }
+      const filtered = await filter(events, async e => {
+        const seen = await this.eventDb.getSeen(this.getHash(e))
+        return !seen
+      })
+      filtered.map(async (e: MichelinePrim | Symbol) => {
+        e = e as MichelinePrim
+        const eventName = (e.args[0] as MichelineString).string
+        const handler = this.checkingEvents.get(eventName)
+        if (handler) {
+          const args = e.args[1] as MichelinePrim[]
+          args.forEach(arg => {
+            handler({
+              name: eventName,
+              values: (((arg as MichelinePrim).args[1] as MichelinePrim)
+                .args[0] as MichelinePrim).args
             })
-          }
-          this.eventDb.addSeen(this.getHash(e))
-          return true
-        })
+          })
+        }
+        await this.eventDb.addSeen(this.getHash(e))
+        return
+      })
     }
     await this.eventDb.setLastLoggedBlock(
       Bytes.fromString(this.contractAddress.toString()),
@@ -139,8 +144,15 @@ export default class EventWatcher implements IEventWatcher {
   private getHash(e: MichelinePrim): Bytes {
     return Bytes.from(
       Uint8Array.from(
-        CryptoUtils.simpleHash(Buffer.from(JSON.stringify(e), 'utf8'), 12)
+        CryptoUtils.simpleHash(Buffer.from(JSON.stringify(e), 'utf8'), 16)
       )
     )
   }
+}
+
+async function filter<T>(arr: T[], callback: (item: T) => Promise<boolean>) {
+  const fail = Symbol()
+  return (await Promise.all(
+    arr.map(async item => ((await callback(item)) ? item : fail))
+  )).filter(i => i !== fail)
 }
