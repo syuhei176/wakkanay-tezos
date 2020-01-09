@@ -36,7 +36,7 @@ describe('TzEventWatcher', () => {
       })
       expect(handler).toHaveBeenCalledTimes(1)
       await eventWatcher.poll(196527, 196530, () => {})
-      //confirm
+      // confirm not to emit same event
       expect(handler).toHaveBeenCalledTimes(1)
     })
 
