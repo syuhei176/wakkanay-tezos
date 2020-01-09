@@ -106,7 +106,7 @@ export default class EventWatcher implements IEventWatcher {
         const seen = await this.eventDb.getSeen(this.getHash(e))
         return !seen
       })
-      filtered.map(async (e: MichelinePrim | Symbol) => {
+      filtered.map(async (e: MichelinePrim | symbol) => {
         e = e as MichelinePrim
         const eventName = (e.args[0] as MichelineString).string
         const handler = this.checkingEvents.get(eventName)
