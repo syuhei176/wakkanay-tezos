@@ -106,9 +106,13 @@ export default class EventWatcher implements IEventWatcher {
           const eventName = (e.args[0] as MichelineString).string
           const handler = this.checkingEvents.get(eventName)
           if (handler) {
-            handler({
-              name: eventName,
-              values: e.args[1]
+            const args = e.args[1] as MichelinePrim[]
+            args.forEach(arg => {
+              handler({
+                name: eventName,
+                values: (((arg as MichelinePrim).args[1] as MichelinePrim)
+                  .args[0] as MichelinePrim).args
+              })
             })
           }
           this.eventDb.addSeen(this.getHash(e))

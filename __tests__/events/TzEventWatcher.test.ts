@@ -28,20 +28,7 @@ describe('TzEventWatcher', () => {
       eventWatcher.subscribe('BlockSubmitted', event => {
         expect(event).toEqual({
           name: 'BlockSubmitted',
-          values: [
-            {
-              prim: 'Pair',
-              args: [
-                { int: 0 },
-                {
-                  prim: 'Right',
-                  args: [
-                    { prim: 'Pair', args: [{ int: 0 }, { string: 'root' }] }
-                  ]
-                }
-              ]
-            }
-          ]
+          values: [{ int: 0 }, { string: 'root' }]
         })
       })
       await eventWatcher.poll(196527, 196530, () => {})
