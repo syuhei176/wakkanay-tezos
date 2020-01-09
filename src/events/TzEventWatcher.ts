@@ -97,29 +97,21 @@ export default class EventWatcher implements IEventWatcher {
         this.contractAddress
       )
       const events = this.parseStorage(storage)
-      const getHash = (e: MichelinePrim) =>
-        Bytes.from(
-          Uint8Array.from(
-            CryptoUtils.simpleHash(Buffer.from(JSON.stringify(e), 'utf8'), 12)
-          )
-        )
-
-      const filtered = events
+      events
         .filter(async e => {
-          const seen = await this.eventDb.getSeen(getHash(e))
+          const seen = await this.eventDb.getSeen(this.getHash(e))
           return !seen
         })
         .map(e => {
-          const handler = this.checkingEvents.get(
-            (e.args[0] as MichelineString).string
-          )
+          const eventName = (e.args[0] as MichelineString).string
+          const handler = this.checkingEvents.get(eventName)
           if (handler) {
             handler({
-              name: (e.args[0] as MichelineString).string,
+              name: eventName,
               values: e.args[1]
             })
           }
-          this.eventDb.addSeen(getHash(e))
+          this.eventDb.addSeen(this.getHash(e))
           return true
         })
     }
@@ -130,10 +122,21 @@ export default class EventWatcher implements IEventWatcher {
     completedHandler()
   }
 
+  /**
+   * parse storage to get events_storage scope
+   * @param storage
+   */
   private parseStorage(storage: MichelinePrim): MichelinePrim[] {
-    // TODO: parse!!
     const events = (((storage.args[0] as MichelinePrim)
       .args[1] as MichelinePrim).args[1] as MichelinePrim).args
     return events[0] as MichelinePrim[]
+  }
+
+  private getHash(e: MichelinePrim): Bytes {
+    return Bytes.from(
+      Uint8Array.from(
+        CryptoUtils.simpleHash(Buffer.from(JSON.stringify(e), 'utf8'), 12)
+      )
+    )
   }
 }
