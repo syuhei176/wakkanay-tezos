@@ -8,6 +8,7 @@ import Struct = types.Struct
 import flattenDeep from 'lodash.flattendeep'
 import { AbiEncodeError, AbiDecodeError } from './Error'
 import { MichelinePrimItem, isMichelinePrim } from './MichelineTypes'
+import { TezosLanguageUtil } from 'conseiljs'
 
 function encodeToPair(
   codables: Codable[],
@@ -80,7 +81,8 @@ export function decodeInner(d: Codable, input: any): Codable {
   } else if (c === 'BigNumber') {
     d.setData(BigInt(input.string))
   } else if (c === 'Address') {
-    d.setData(input.string)
+    console.log(input)
+    d.setData(input.bytes)
   } else if (c === 'Bytes') {
     d.setData(Bytes.fromString(input.string).data)
   } else if (c === 'List') {
@@ -114,7 +116,11 @@ const TzCoder: Coder = {
    */
   encode(input: Codable): Bytes {
     const michelinePrimItem = encodeInnerToMichelinePrimItem(input, input.raw)
-    return Bytes.fromString(JSON.stringify(michelinePrimItem))
+    return Bytes.fromHexString(
+      TezosLanguageUtil.translateMichelineToHex(
+        JSON.stringify(michelinePrimItem)
+      )
+    )
   },
   /**
    * decode given Micheline string into given codable object
@@ -122,7 +128,12 @@ const TzCoder: Coder = {
    * @param data Micheline string to decode
    */
   decode<T extends Codable>(d: T, data: Bytes): T {
-    return decodeInner(d, JSON.parse(data.intoString())) as T
+    return decodeInner(
+      d,
+      JSON.parse(
+        TezosLanguageUtil.hexToMicheline(data.toHexString().substr(2)).code
+      )
+    ) as T
   }
 }
 
