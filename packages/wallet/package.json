@@ -57,7 +57,9 @@
   },
   "devDependencies": {
     "@cryptoeconomicslab/level-kvs": "0.0.3",
-    "@cryptoeconomicslab/primitives": "^0.0.5"
+    "@cryptoeconomicslab/primitives": "^0.0.5",
+    "@types/libsodium-wrappers-sumo": "^0.7.3",
+    "@types/lodash.flattendeep": "^4.4.6"
   },
   "peerDependencies": {
     "@cryptoeconomicslab/primitives": "^0.0.5"

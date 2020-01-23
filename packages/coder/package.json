@@ -50,7 +50,8 @@
   },
   "devDependencies": {
     "@cryptoeconomicslab/coder": "^0.0.5",
-    "@cryptoeconomicslab/primitives": "^0.0.5"
+    "@cryptoeconomicslab/primitives": "^0.0.5",
+    "@types/lodash.flattendeep": "^4.4.6"
   },
   "peerDependencies": {
     "@cryptoeconomicslab/primitives": "^0.0.5"
