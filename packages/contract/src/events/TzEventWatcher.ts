@@ -1,15 +1,18 @@
-import { db, events, types } from 'wakkanay'
-import EventDb = events.EventDb
-import KeyValueStore = db.KeyValueStore
-import IEventWatcher = events.IEventWatcher
-import EventHandler = events.EventHandler
-import ErrorHandler = events.ErrorHandler
-import CompletedHandler = events.CompletedHandler
-import Address = types.Address
-import Bytes = types.Bytes
+import { Bytes } from '@cryptoeconomicslab/primitives'
+import { KeyValueStore } from '@cryptoeconomicslab/db'
+import {
+  EventDb,
+  EventHandler,
+  ErrorHandler,
+  IEventWatcher,
+  CompletedHandler
+} from '@cryptoeconomicslab/contract'
 import { ConseilServerInfo, TezosConseilClient, CryptoUtils } from 'conseiljs'
-import { BlockInfoProvider, TezosBlockInfoProvider } from '../helpers'
-import { MichelinePrim, MichelineString } from '../coder'
+import {
+  BlockInfoProvider,
+  TezosBlockInfoProvider
+} from '@cryptoeconomicslab/tezos-wallet'
+import { MichelinePrim, MichelineString } from '@cryptoeconomicslab/tezos-coder'
 
 export interface EventWatcherOptions {
   interval: number
@@ -28,7 +31,7 @@ export default class EventWatcher implements IEventWatcher {
   public eventDb: EventDb
   public checkingEvents: Map<string, EventHandler>
   public options: EventWatcherOptions
-  public timer?: number
+  public timer?: NodeJS.Timer
   public contractAddress: string
 
   constructor({
@@ -75,7 +78,7 @@ export default class EventWatcher implements IEventWatcher {
         errorHandler(e)
       }
     }
-    this.timer = window.setTimeout(async () => {
+    this.timer = setTimeout(async () => {
       await this.start(handler, errorHandler)
     }, this.options.interval)
   }

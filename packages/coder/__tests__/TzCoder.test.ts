@@ -1,12 +1,13 @@
-import TzCoder from '../../src/coder/TzCoder'
-import { types } from 'wakkanay'
-import Address = types.Address
-import Bytes = types.Bytes
-import Integer = types.Integer
-import BigNumber = types.BigNumber
-import List = types.List
-import Tuple = types.Tuple
-import Struct = types.Struct
+import TzCoder from '../src/TzCoder'
+import {
+  Address,
+  Bytes,
+  Integer,
+  BigNumber,
+  List,
+  Tuple,
+  Struct
+} from '@cryptoeconomicslab/primitives'
 
 describe('TzCoder', () => {
   describe('encode', () => {

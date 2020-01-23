@@ -1,10 +1,11 @@
-import { coder, types } from 'wakkanay'
-import Coder = coder.Coder
-import Codable = types.Codable
-import Bytes = types.Bytes
-import List = types.List
-import Tuple = types.Tuple
-import Struct = types.Struct
+import { Coder } from '@cryptoeconomicslab/coder'
+import {
+  Codable,
+  Bytes,
+  List,
+  Tuple,
+  Struct
+} from '@cryptoeconomicslab/primitives'
 import flattenDeep from 'lodash.flattendeep'
 import { AbiEncodeError, AbiDecodeError } from './Error'
 import { MichelinePrimItem, isMichelinePrim } from './MichelineTypes'

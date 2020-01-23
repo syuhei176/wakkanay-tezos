@@ -1,4 +1,4 @@
-import { MichelinePrim } from '../../src/coder'
+import { MichelinePrim } from '@cryptoeconomicslab/tezos-coder'
 
 // remove unnecessary array []
 //

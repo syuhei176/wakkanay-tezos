@@ -1,6 +1,6 @@
-import { BlockInfoProvider } from '../../src/helpers/BlockInfoProvider'
+import { BlockInfoProvider } from '@cryptoeconomicslab/tezos-wallet'
 import { ConseilServerInfo } from 'conseiljs'
-import { MichelinePrim } from '../../src/coder'
+import { MichelinePrim } from '@cryptoeconomicslab/tezos-coder'
 import { testEventStorage } from './testInitialStorage'
 
 export class MockBlockInfoProvider implements BlockInfoProvider {
