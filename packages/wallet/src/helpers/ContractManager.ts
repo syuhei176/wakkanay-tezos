@@ -1,4 +1,4 @@
-import { Address } from 'wakkanay/dist/types/Codables'
+import { Address } from '@cryptoeconomicslab/primitives'
 import {
   OperationKindType,
   OperationResult,
@@ -6,7 +6,7 @@ import {
   TezosNodeWriter,
   TezosParameterFormat
 } from 'conseiljs'
-import { TzWallet } from '../wallet'
+import { TzWallet } from '../'
 
 // TODO: research default limits per operation
 export const DefaultTransactionStorageLimit = 300

@@ -1,8 +1,6 @@
-import { IWallet } from 'wakkanay/dist/wallet/interfaces/IWallet'
-import { Address, Bytes } from 'wakkanay/dist/types/Codables'
-import { Balance } from 'wakkanay/dist/types'
-import { ed25519Verifier } from 'wakkanay/dist/verifiers'
-import BigNumber from 'bignumber.js'
+import { Wallet, Balance } from '@cryptoeconomicslab/wallet'
+import { Address, Bytes, BigNumber } from '@cryptoeconomicslab/primitives'
+import { ed25519Verifier } from '@cryptoeconomicslab/signature'
 import {
   ConseilServerInfo,
   CryptoUtils,
@@ -10,9 +8,9 @@ import {
   TezosConseilClient,
   TezosMessageUtils
 } from 'conseiljs'
-import { ContractManager } from '../helpers'
+import { ContractManager } from './helpers'
 
-export class TzWallet implements IWallet {
+export class TzWallet implements Wallet {
   constructor(
     readonly keyStore: KeyStore,
     readonly conseilServerInfo: ConseilServerInfo

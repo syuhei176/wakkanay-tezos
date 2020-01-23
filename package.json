@@ -1,69 +1,33 @@
 {
-  "name": "wakkanay-tezos",
-  "version": "0.0.1",
-  "author": {
-    "name": "Cryptoeconomics Lab",
-    "url": "https://www.cryptoeconomicslab.com/"
-  },
-  "license": "ISC",
-  "engines": {
-    "node": ">=10"
-  },
-  "main": "dist/index.js",
-  "files": [
-    "dist/**/*.js",
-    "dist/**/*.d.ts"
-  ],
+  "name": "root",
   "scripts": {
-    "build": "tsc --build ./tsconfig.json",
-    "test": "jest",
-    "lint": "eslint --ext ts,tsx src",
-    "fmt": "prettier --write 'src/**/*.ts' '__tests__/**/*.ts'",
-    "prepare": "npm run build"
+    "build": "lerna run build",
+    "lint": "lerna run lint",
+    "lint:fix": "lerna run lint:fix",
+    "test": "npm run build && lerna run test",
+    "clean": "lerna run clean",
+    "publish": "lerna run build && lerna publish"
   },
-  "dependencies": {
-    "conseiljs": "^0.3.1",
-    "lodash.flattendeep": "^4.4.0",
-    "wakkanay": "github:cryptoeconomicslab/wakkanay"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/lodash.flattendeep": "^4.4.6",
     "@types/jest": "^24.0.20",
-    "@types/libsodium-wrappers-sumo": "^0.7.3",
     "@types/node": "^12.12.9",
     "@typescript-eslint/eslint-plugin": "^2.5.0",
     "@typescript-eslint/parser": "^2.5.0",
     "eslint": "^6.6.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.1.0",
     "jest": "^24.9.0",
+    "lerna": "^3.20.2",
     "prettier": "^1.18.2",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
-    "husky": "^3.1.0",
     "typescript": "^3.6.4"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run fmt"
-    }
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testMatch": [
-      "**/__tests__/**/?(*.)+(spec|test).(ts|js)",
-      "**/?(*.)+(spec|test).ts"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "ts"
-    ],
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "tsconfig.json"
-      }
+      "pre-commit": "npm run lint:fix"
     }
   }
 }

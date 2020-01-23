@@ -1,15 +1,15 @@
 jest.unmock('../../src/')
 import EventWatcher from '../../src/events/TzEventWatcher'
-import { db, types } from 'wakkanay'
-import { Address } from 'wakkanay/dist/types'
-import { KeyValueStore } from 'wakkanay/dist/db'
+import * as types from '@cryptoeconomicslab/primitives'
+import { KeyValueStore } from '@cryptoeconomicslab/db'
+import { InMemoryKeyValueStore } from '@cryptoeconomicslab/level-kvs'
 import { MockBlockInfoProvider } from './MockBlockInfoProvider'
-import EventLog from 'wakkanay/dist/events/types/EventLog'
+import EventLog from '@cryptoeconomicslab/contract'
 
 describe('TzEventWatcher', () => {
   let kvs: KeyValueStore
   beforeEach(async () => {
-    kvs = new db.InMemoryKeyValueStore(types.Bytes.default())
+    kvs = new InMemoryKeyValueStore(types.Bytes.default())
   })
 
   describe('poll', () => {

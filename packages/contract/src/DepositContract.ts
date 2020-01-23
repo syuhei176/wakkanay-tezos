@@ -1,7 +1,6 @@
-import { Address, Bytes, Integer } from 'wakkanay/dist/types/Codables'
-import { Property } from 'wakkanay/dist/ovm/types'
-import { contract } from 'wakkanay'
-import IDepositContract = contract.IDepositContract
+import { Address, Bytes, Integer, Range } from '@cryptoeconomicslab/primitives'
+import { IDepositContract } from '@cryptoeconomicslab/contract'
+import { Property } from '@cryptoeconomicslab/ovm'
 
 /**
  * TODO: add implementation

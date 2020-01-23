@@ -1,7 +1,7 @@
 jest.unmock('conseiljs')
 const conseiljs = require('conseiljs')
-const { TzWalletFactory } = require('../../src/wallet')
-const { Bytes } = require('wakkanay/dist/types/Codables')
+const { TzWalletFactory } = require('../src')
+const { Bytes } = require('@cryptoeconomicslab/primitives')
 
 const mockGetAccount = jest.fn().mockImplementation(async () => {
   return [{ balance: 100 }]

@@ -1,9 +1,8 @@
-import { IWallet } from 'wakkanay/dist/wallet/interfaces/IWallet'
-import { IWalletFactory } from 'wakkanay/dist/wallet/interfaces/IWalletFactory'
+import { Wallet, WalletFactory } from '@cryptoeconomicslab/wallet'
 import { TzWallet } from './TzWallet'
 import { ConseilServerInfo, TezosWalletUtil } from 'conseiljs'
 
-export class TzWalletFactory implements IWalletFactory {
+export class TzWalletFactory implements WalletFactory {
   // Default ServerInfo won't connect to network
   conseilServerInfo: ConseilServerInfo = {
     url: '',
@@ -17,7 +16,7 @@ export class TzWalletFactory implements IWalletFactory {
     }
   }
 
-  async fromPrivateKey(privateKey: string): Promise<IWallet> {
+  async fromPrivateKey(privateKey: string): Promise<Wallet> {
     return new TzWallet(
       await TezosWalletUtil.restoreIdentityWithSecretKey(privateKey),
       this.conseilServerInfo

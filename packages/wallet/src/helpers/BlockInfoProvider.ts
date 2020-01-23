@@ -1,5 +1,4 @@
-import { types } from 'wakkanay'
-import Address = types.Address
+import { Address } from '@cryptoeconomicslab/primitives'
 import {
   OperationKindType,
   TezosConseilClient,
@@ -9,7 +8,7 @@ import {
   TezosMessageUtils,
   TezosNodeReader
 } from 'conseiljs'
-import { MichelinePrim } from '../coder'
+import { MichelinePrim } from '@cryptoeconomicslab/tezos-coder'
 
 interface Script {
   code: any

@@ -1,7 +1,6 @@
-import { Bytes, BigNumber } from 'wakkanay/dist/types/Codables'
-import { contract } from 'wakkanay'
-import ICommitmentContract = contract.ICommitmentContract
-import { ContractManager } from '../helpers'
+import { Bytes, BigNumber } from '@cryptoeconomicslab/primitives'
+import { ICommitmentContract } from '@cryptoeconomicslab/contract'
+import { ContractManager } from '@cryptoeconomicslab/tezos-wallet'
 
 export class CommitmentContract implements ICommitmentContract {
   constructor(readonly connection: ContractManager) {}
