@@ -7,15 +7,29 @@ import {
   IEventWatcher,
   CompletedHandler
 } from '@cryptoeconomicslab/contract'
-import { ConseilServerInfo, TezosConseilClient, CryptoUtils } from 'conseiljs'
+import {
+  ConseilServerInfo,
+  TezosConseilClient,
+  CryptoUtils,
+  TezosLanguageUtil
+} from 'conseiljs'
 import {
   BlockInfoProvider,
   TezosBlockInfoProvider
 } from '@cryptoeconomicslab/tezos-wallet'
-import { MichelinePrim, MichelineString } from '@cryptoeconomicslab/tezos-coder'
+import {
+  MichelinePrim,
+  MichelinePrimItem,
+  MichelineString
+} from '@cryptoeconomicslab/tezos-coder'
 
 export interface EventWatcherOptions {
   interval: number
+}
+
+export enum EventType {
+  CHECKPOINT_FINALIZED = 'CheckpointFinalized',
+  EXIT_FINALIZED = 'ExitFinalized'
 }
 
 export type TzEventWatcherArgType = {
@@ -116,10 +130,16 @@ export default class EventWatcher implements IEventWatcher {
         if (handler) {
           const args = e.args[1] as MichelinePrim[]
           args.forEach(arg => {
+            // note: wanna change to MichelineBytes[]
+            const values = ((arg as MichelinePrim).args[1] as any[]).map(
+              b =>
+                JSON.parse(
+                  TezosLanguageUtil.hexToMicheline(b.bytes).code
+                ) as MichelinePrimItem
+            )
             handler({
               name: eventName,
-              values: (((arg as MichelinePrim).args[1] as MichelinePrim)
-                .args[0] as MichelinePrim).args
+              values: values
             })
           })
         }
@@ -139,9 +159,9 @@ export default class EventWatcher implements IEventWatcher {
    * @param storage
    */
   private parseStorage(storage: MichelinePrim): MichelinePrim[] {
-    const events = (((storage.args[0] as MichelinePrim)
-      .args[1] as MichelinePrim).args[1] as MichelinePrim).args
-    return events[0] as MichelinePrim[]
+    const events = ((storage.args[1] as MichelinePrim).args[1] as MichelinePrim)
+      .args[0] as MichelinePrim[]
+    return events as MichelinePrim[]
   }
 
   private getHash(e: MichelinePrim): Bytes {
