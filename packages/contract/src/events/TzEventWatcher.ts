@@ -14,17 +14,17 @@ import {
   TezosLanguageUtil
 } from 'conseiljs'
 import {
-  BlockInfoProvider,
-  TezosBlockInfoProvider
-} from '@cryptoeconomicslab/tezos-wallet'
-import {
   MichelinePrim,
   MichelinePrimItem,
   MichelineString
 } from '@cryptoeconomicslab/tezos-coder'
+import {
+  BlockInfoProvider,
+  TezosBlockInfoProvider
+} from '@cryptoeconomicslab/tezos-wallet'
 
 export interface EventWatcherOptions {
-  interval: number
+  interval?: number
 }
 
 export enum EventType {
@@ -36,9 +36,11 @@ export type TzEventWatcherArgType = {
   conseilServerInfo: ConseilServerInfo
   kvs: KeyValueStore
   contractAddress: string
-  options: EventWatcherOptions
+  options?: EventWatcherOptions
   blockInfoProvider?: BlockInfoProvider
 }
+
+const DEFAULT_INTERVAL = 1000
 
 export default class EventWatcher implements IEventWatcher {
   public blockInfoProvider: BlockInfoProvider
@@ -59,7 +61,7 @@ export default class EventWatcher implements IEventWatcher {
     this.eventDb = new EventDb(kvs)
     this.checkingEvents = new Map<string, EventHandler>()
     this.options = {
-      interval: 1000,
+      interval: DEFAULT_INTERVAL,
       ...options
     }
     this.contractAddress = contractAddress
@@ -94,7 +96,7 @@ export default class EventWatcher implements IEventWatcher {
     }
     this.timer = setTimeout(async () => {
       await this.start(handler, errorHandler)
-    }, this.options.interval)
+    }, this.options.interval || DEFAULT_INTERVAL)
   }
 
   public cancel() {
@@ -160,7 +162,7 @@ export default class EventWatcher implements IEventWatcher {
    */
   private parseStorage(storage: MichelinePrim): MichelinePrim[] {
     const events = ((storage.args[1] as MichelinePrim).args[1] as MichelinePrim)
-      .args[0] as MichelinePrim[]
+      .args[0]
     return events as MichelinePrim[]
   }
 

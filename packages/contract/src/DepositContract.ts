@@ -27,8 +27,7 @@ export class DepositContract implements IDepositContract {
     this.eventWatcher = new EventWatcher({
       conseilServerInfo: wallet.conseilServerInfo,
       kvs: eventDb,
-      contractAddress: address.data,
-      options: { interval: 1000 }
+      contractAddress: address.data
     })
   }
 
@@ -58,7 +57,7 @@ export class DepositContract implements IDepositContract {
                                 args: [
                                   { int: '0' },
                                   {
-                                    bytes: `'${initialState.inputs[0].intoString()}'`
+                                    bytes: `'${initialState.inputs[0].toHexString()}'`
                                   }
                                 ]
                               }
@@ -106,7 +105,7 @@ export class DepositContract implements IDepositContract {
                             args: [
                               { int: '0' },
                               {
-                                bytes: `'${checkpoint.inputs[0].intoString()}'`
+                                bytes: `'${checkpoint.inputs[0].toHexString()}'`
                               }
                             ]
                           },
@@ -115,7 +114,7 @@ export class DepositContract implements IDepositContract {
                             args: [
                               { int: '1' },
                               {
-                                bytes: `'${checkpoint.inputs[1].intoString()}'`
+                                bytes: `'${checkpoint.inputs[1].toHexString()}'`
                               }
                             ]
                           }
@@ -160,14 +159,14 @@ export class DepositContract implements IDepositContract {
                                 prim: 'Elt',
                                 args: [
                                   { int: '0' },
-                                  { bytes: `'${exit.inputs[0].intoString()}'` }
+                                  { bytes: `'${exit.inputs[0].toHexString()}'` }
                                 ]
                               },
                               {
                                 prim: 'Elt',
                                 args: [
                                   { int: '1' },
-                                  { bytes: `'${exit.inputs[1].intoString()}'` }
+                                  { bytes: `'${exit.inputs[1].toHexString()}'` }
                                 ]
                               }
                             ],
