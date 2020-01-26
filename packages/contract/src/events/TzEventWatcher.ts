@@ -1,3 +1,9 @@
+import {
+  ConseilServerInfo,
+  CryptoUtils,
+  TezosConseilClient,
+  TezosLanguageUtil
+} from 'conseiljs'
 import { Bytes } from '@cryptoeconomicslab/primitives'
 import { KeyValueStore } from '@cryptoeconomicslab/db'
 import {
@@ -7,12 +13,6 @@ import {
   IEventWatcher,
   CompletedHandler
 } from '@cryptoeconomicslab/contract'
-import {
-  ConseilServerInfo,
-  TezosConseilClient,
-  CryptoUtils,
-  TezosLanguageUtil
-} from 'conseiljs'
 import {
   MichelinePrim,
   MichelinePrimItem,
@@ -28,6 +28,7 @@ export interface EventWatcherOptions {
 }
 
 export enum EventType {
+  BLOCK_SUBMITED = 'BlockSubmitted',
   CHECKPOINT_FINALIZED = 'CheckpointFinalized',
   EXIT_FINALIZED = 'ExitFinalized'
 }
@@ -153,6 +154,31 @@ export default class EventWatcher implements IEventWatcher {
       blockNumber
     )
     completedHandler()
+  }
+
+  /**
+   * get contract event storage
+   * @param eventType
+   */
+  public async getEventStorage(
+    eventType?: EventType
+  ): Promise<MichelinePrim[]> {
+    const block = await TezosConseilClient.getBlockHead(
+      this.blockInfoProvider.conseilServerInfo,
+      this.blockInfoProvider.conseilServerInfo.network
+    )
+    const storage = this.parseStorage(
+      await this.blockInfoProvider.getContractStorage(
+        block.level,
+        this.contractAddress
+      )
+    )
+    if (eventType) {
+      storage.filter((e: MichelinePrim) => {
+        return (e.args[0] as MichelineString).string === eventType.toString()
+      })
+    }
+    return storage
   }
 
   /**

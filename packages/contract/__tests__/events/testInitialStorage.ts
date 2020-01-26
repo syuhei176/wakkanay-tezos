@@ -141,7 +141,7 @@ export const testEventStorage: MichelinePrim = {
                       prim: 'Pair',
                       args: [
                         { int: '0' },
-                        [{ bytes: '001' }, { bytes: '0100000004726f6f74' }]
+                        [{ bytes: '001' }, { bytes: '0a00000006010203040506' }]
                       ]
                     }
                   ]

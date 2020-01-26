@@ -1,34 +1,101 @@
-import { Bytes, BigNumber } from '@cryptoeconomicslab/primitives'
-import { ICommitmentContract } from '@cryptoeconomicslab/contract'
-import { ContractManager } from '@cryptoeconomicslab/tezos-wallet'
+import { TezosLanguageUtil } from 'conseiljs'
+import { Address, Bytes, BigNumber } from '@cryptoeconomicslab/primitives'
+import { ICommitmentContract, EventLog } from '@cryptoeconomicslab/contract'
+import { KeyValueStore } from '@cryptoeconomicslab/db'
+import {
+  ContractManager,
+  TzWallet,
+  TezosBlockInfoProvider
+} from '@cryptoeconomicslab/tezos-wallet'
+import {
+  MichelineNumber,
+  removeBytesPrefix
+} from '@cryptoeconomicslab/tezos-coder'
+import EventWatcher, { EventType } from './events'
 
 export class CommitmentContract implements ICommitmentContract {
-  constructor(readonly connection: ContractManager) {}
+  private connection: ContractManager
+  private blockInfoProvider: TezosBlockInfoProvider
+  private eventWatcher: EventWatcher
 
-  /**
-   * submit block
-   */
-  async submit(blockNumber: BigNumber, root: Bytes) {
-    const amount = 0
-    const entrypoint = 'submit'
-    const params = `(Pair (Pair ${blockNumber} "${blockNumber.toString()}") "${root.toHexString()}")`
-
-    await this.connection.invokeContract(amount, entrypoint, params)
+  constructor(
+    readonly address: Address,
+    eventDb: KeyValueStore,
+    wallet: TzWallet
+  ) {
+    this.connection = new ContractManager(wallet, address)
+    this.blockInfoProvider = new TezosBlockInfoProvider(
+      wallet.conseilServerInfo
+    )
+    this.eventWatcher = new EventWatcher({
+      conseilServerInfo: wallet.conseilServerInfo,
+      kvs: eventDb,
+      contractAddress: address.data,
+      blockInfoProvider: this.blockInfoProvider
+    })
   }
 
-  // TODO: add implementation
+  async submit(blockNumber: BigNumber, root: Bytes) {
+    const param = {
+      prim: 'Right',
+      args: [
+        {
+          prim: 'Pair',
+          args: [
+            { int: `'${blockNumber}'` },
+            { bytes: `'${removeBytesPrefix(root)}'` }
+          ]
+        }
+      ]
+    }
+    await this.connection.invokeContract(0, 'main', JSON.stringify(param))
+  }
+
   async getCurrentBlock(): Promise<BigNumber> {
-    throw new Error('Not implemented')
+    const events = await this.eventWatcher.getEventStorage(
+      EventType.BLOCK_SUBMITED
+    )
+    let latestBlockNo = 0
+    events.map(e => {
+      const blockNo = this.getBlockNoFromHex(e.args[1][0].slice(2))
+      if (latestBlockNo < blockNo) latestBlockNo = blockNo
+    })
+    return BigNumber.fromString(latestBlockNo.toString())
   }
 
   async getRoot(blockNumber: BigNumber): Promise<Bytes> {
-    throw new Error('Not implemented')
+    const events = await this.eventWatcher.getEventStorage(
+      EventType.BLOCK_SUBMITED
+    )
+    events.filter(e => {
+      const blockNo = this.getBlockNoFromHex(e.args[1][0].slice(2))
+      return blockNo.toString() === blockNumber.toString()
+    })
+    return Bytes.fromHexString(events[0].args[1][1])
   }
 
-  // TODO: add implementation
   subscribeBlockSubmitted(
     handler: (blockNumber: BigNumber, root: Bytes) => void
   ) {
-    throw new Error('Not implemented')
+    this.eventWatcher.subscribe(EventType.BLOCK_SUBMITED, (log: EventLog) => {
+      const blockNumber = log.values[0].int
+      const root = log.values[1].bytes
+      handler(
+        BigNumber.fromString(blockNumber.toString()),
+        Bytes.fromHexString(root)
+      )
+    })
+    this.eventWatcher.cancel()
+    this.eventWatcher.start(() => {
+      console.log('event polled')
+    })
+  }
+
+  private getBlockNoFromHex(hex: string): number {
+    return Number(
+      (JSON.parse(
+        TezosLanguageUtil.hexToMicheline(hex).code
+      ) as MichelineNumber).int
+    )
   }
 }
