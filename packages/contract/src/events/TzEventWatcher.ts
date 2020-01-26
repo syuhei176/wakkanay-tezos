@@ -132,7 +132,6 @@ export default class EventWatcher implements IEventWatcher {
         if (handler) {
           const args = e.args[1] as MichelinePrim[]
           args.forEach(arg => {
-            // note: wanna change to MichelineBytes[]
             const values = ((arg as MichelinePrim).args[1] as any[]).map(
               b =>
                 JSON.parse(

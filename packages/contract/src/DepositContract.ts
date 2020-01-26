@@ -8,6 +8,12 @@ import {
 import { IDepositContract, EventLog } from '@cryptoeconomicslab/contract'
 import { KeyValueStore } from '@cryptoeconomicslab/db'
 import { Property } from '@cryptoeconomicslab/ovm'
+import {
+  MichelineBytes,
+  MichelinePrim,
+  decodeRawBytesToAddress,
+  removeBytesPrefix
+} from '@cryptoeconomicslab/tezos-coder'
 import { ContractManager, TzWallet } from '@cryptoeconomicslab/tezos-wallet'
 import EventWatcher, { EventType } from './events'
 
@@ -57,7 +63,9 @@ export class DepositContract implements IDepositContract {
                                 args: [
                                   { int: '0' },
                                   {
-                                    bytes: `'${initialState.inputs[0].toHexString()}'`
+                                    bytes: `'${removeBytesPrefix(
+                                      initialState.inputs[0]
+                                    )}'`
                                   }
                                 ]
                               }
@@ -105,7 +113,9 @@ export class DepositContract implements IDepositContract {
                             args: [
                               { int: '0' },
                               {
-                                bytes: `'${checkpoint.inputs[0].toHexString()}'`
+                                bytes: `'${removeBytesPrefix(
+                                  checkpoint.inputs[0]
+                                )}'`
                               }
                             ]
                           },
@@ -114,7 +124,9 @@ export class DepositContract implements IDepositContract {
                             args: [
                               { int: '1' },
                               {
-                                bytes: `'${checkpoint.inputs[1].toHexString()}'`
+                                bytes: `'${removeBytesPrefix(
+                                  checkpoint.inputs[1]
+                                )}'`
                               }
                             ]
                           }
@@ -159,14 +171,22 @@ export class DepositContract implements IDepositContract {
                                 prim: 'Elt',
                                 args: [
                                   { int: '0' },
-                                  { bytes: `'${exit.inputs[0].toHexString()}'` }
+                                  {
+                                    bytes: `'${removeBytesPrefix(
+                                      exit.inputs[0]
+                                    )}'`
+                                  }
                                 ]
                               },
                               {
                                 prim: 'Elt',
                                 args: [
                                   { int: '1' },
-                                  { bytes: `'${exit.inputs[1].toHexString()}'` }
+                                  {
+                                    bytes: `'${removeBytesPrefix(
+                                      exit.inputs[1]
+                                    )}'`
+                                  }
                                 ]
                               }
                             ],
@@ -191,37 +211,85 @@ export class DepositContract implements IDepositContract {
     handler: (checkpointId: Bytes, checkpoint: [Range, Property]) => void
   ) {
     this.eventWatcher.subscribe('CheckpointFinalized', (log: EventLog) => {
-      // TODO: delete
-      // NOTE: this is the image data
-      // const d = [
-      //   { string: 'TOKEN_TYPE_ADDRESS' },
-      //   { bytes: 'CHECKPOINT_ID' },
-      //   {
-      //     prim: 'Pair',
-      //     args: [
-      //       {
-      //         prim: 'Pair',
-      //         args: [{ int: 0 }, { int: 1 }]
-      //       },
-      //       {
-      //         prim: 'Pair',
-      //         args: [
-      //           { string: 'PREDICATE_ADDRESS' },
-      //           [{ bytes: '' }, { bytes: '' }]
-      //         ]
-      //       }
-      //     ]
-      //   }
-      // ]
-      const checkpointId = log.values[1].string
+      /**
+       * TODO: delete
+       * NOTE: this is the image data
+      const d = [
+        // token type
+        { bytes: '000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d' },
+        // checkpoint id
+        {
+          bytes:
+            '28f3a910172a1fd70d8d172600485c764c82761702e650e45448ca53c2135092'
+        },
+        // checkpoint
+        {
+          prim: 'Pair',
+          args: [
+            {
+              prim: 'Pair',
+              args: [
+                [
+                  {
+                    prim: 'Elt',
+                    args: [
+                      { int: '0' },
+                      {
+                        // token type address
+                        bytes:
+                          '050a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d'
+                      }
+                    ]
+                  },
+                  {
+                    prim: 'Elt',
+                    // range
+                    args: [{ int: '1' }, { bytes: '05070700020003' }]
+                  },
+                  // current block
+                  { prim: 'Elt', args: [{ int: '2' }, { bytes: '050000' }] },
+                  {
+                    // property
+                    prim: 'Elt',
+                    args: [
+                      { int: '3' },
+                      {
+                        bytes:
+                          '0507070a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d0200000025070400000a0000001c050a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d'
+                      }
+                    ]
+                  }
+                ],
+                // predicateAddress
+                { bytes: '000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d' }
+              ]
+            },
+            // subrange
+            { prim: 'Pair', args: [{ int: '3' }, { int: '2' }] }
+          ]
+        }
+      ]
+      */
+      const checkpointId = log.values[1].bytes
       const checkpoint = log.values[2].args
       const stateUpdate = new Property(
-        Address.from(checkpoint[1].args[0].string),
-        checkpoint[1].args[1].map(i => Bytes.fromHexString(i.bytes))
+        decodeRawBytesToAddress(
+          Bytes.fromHexString(
+            // TODO: will be fail because the value don't need to encode to Bytes in decodeRawBytesToAddress()
+            // remove 05
+            checkpoint[0].args[1].bytes.slice(2)
+          )
+        ),
+        checkpoint[0].args[0].map((i: MichelinePrim) =>
+          Bytes.fromHexString(
+            // remove 05
+            (i.args[1] as MichelineBytes).bytes.slice(2)
+          )
+        )
       )
       const subrange = new Range(
-        BigNumber.fromString(checkpoint[0].args[0].int.toString()),
-        BigNumber.fromString(checkpoint[0].args[1].int.toString())
+        BigNumber.fromString(checkpoint[1].args[1].int.toString()),
+        BigNumber.fromString(checkpoint[1].args[0].int.toString())
       )
       handler(Bytes.fromHexString(checkpointId), [subrange, stateUpdate])
     })
