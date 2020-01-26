@@ -1,3 +1,4 @@
+import { TezosMessageUtils } from 'conseiljs'
 import {
   Address,
   BigNumber,
@@ -11,7 +12,6 @@ import { Property } from '@cryptoeconomicslab/ovm'
 import {
   MichelineBytes,
   MichelinePrim,
-  decodeRawBytesToAddress,
   removeBytesPrefix
 } from '@cryptoeconomicslab/tezos-coder'
 import { ContractManager, TzWallet } from '@cryptoeconomicslab/tezos-wallet'
@@ -273,12 +273,8 @@ export class DepositContract implements IDepositContract {
       const checkpointId = log.values[1].bytes
       const checkpoint = log.values[2].args
       const stateUpdate = new Property(
-        decodeRawBytesToAddress(
-          Bytes.fromHexString(
-            // TODO: will be fail because the value don't need to encode to Bytes in decodeRawBytesToAddress()
-            // remove 05
-            checkpoint[0].args[1].bytes.slice(2)
-          )
+        Address.from(
+          TezosMessageUtils.readAddress(checkpoint[0].args[1].bytes)
         ),
         checkpoint[0].args[0].map((i: MichelinePrim) =>
           Bytes.fromHexString(
