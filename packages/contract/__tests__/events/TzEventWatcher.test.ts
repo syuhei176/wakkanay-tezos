@@ -6,6 +6,8 @@ import { InMemoryKeyValueStore } from '@cryptoeconomicslab/level-kvs'
 import { MockBlockInfoProvider } from './MockBlockInfoProvider'
 import EventLog from '@cryptoeconomicslab/contract'
 
+import { Bytes } from '@cryptoeconomicslab/primitives'
+
 describe('TzEventWatcher', () => {
   let kvs: KeyValueStore
   beforeEach(async () => {

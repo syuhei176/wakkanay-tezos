@@ -7,24 +7,40 @@ import {
   IEventWatcher,
   CompletedHandler
 } from '@cryptoeconomicslab/contract'
-import { ConseilServerInfo, TezosConseilClient, CryptoUtils } from 'conseiljs'
+import {
+  ConseilServerInfo,
+  TezosConseilClient,
+  CryptoUtils,
+  TezosLanguageUtil
+} from 'conseiljs'
+import {
+  MichelinePrim,
+  MichelinePrimItem,
+  MichelineString
+} from '@cryptoeconomicslab/tezos-coder'
 import {
   BlockInfoProvider,
   TezosBlockInfoProvider
 } from '@cryptoeconomicslab/tezos-wallet'
-import { MichelinePrim, MichelineString } from '@cryptoeconomicslab/tezos-coder'
 
 export interface EventWatcherOptions {
-  interval: number
+  interval?: number
+}
+
+export enum EventType {
+  CHECKPOINT_FINALIZED = 'CheckpointFinalized',
+  EXIT_FINALIZED = 'ExitFinalized'
 }
 
 export type TzEventWatcherArgType = {
   conseilServerInfo: ConseilServerInfo
   kvs: KeyValueStore
   contractAddress: string
-  options: EventWatcherOptions
+  options?: EventWatcherOptions
   blockInfoProvider?: BlockInfoProvider
 }
+
+const DEFAULT_INTERVAL = 1000
 
 export default class EventWatcher implements IEventWatcher {
   public blockInfoProvider: BlockInfoProvider
@@ -45,7 +61,7 @@ export default class EventWatcher implements IEventWatcher {
     this.eventDb = new EventDb(kvs)
     this.checkingEvents = new Map<string, EventHandler>()
     this.options = {
-      interval: 1000,
+      interval: DEFAULT_INTERVAL,
       ...options
     }
     this.contractAddress = contractAddress
@@ -80,7 +96,7 @@ export default class EventWatcher implements IEventWatcher {
     }
     this.timer = setTimeout(async () => {
       await this.start(handler, errorHandler)
-    }, this.options.interval)
+    }, this.options.interval || DEFAULT_INTERVAL)
   }
 
   public cancel() {
@@ -116,10 +132,15 @@ export default class EventWatcher implements IEventWatcher {
         if (handler) {
           const args = e.args[1] as MichelinePrim[]
           args.forEach(arg => {
+            const values = ((arg as MichelinePrim).args[1] as any[]).map(
+              b =>
+                JSON.parse(
+                  TezosLanguageUtil.hexToMicheline(b.bytes).code
+                ) as MichelinePrimItem
+            )
             handler({
               name: eventName,
-              values: (((arg as MichelinePrim).args[1] as MichelinePrim)
-                .args[0] as MichelinePrim).args
+              values: values
             })
           })
         }
@@ -139,9 +160,9 @@ export default class EventWatcher implements IEventWatcher {
    * @param storage
    */
   private parseStorage(storage: MichelinePrim): MichelinePrim[] {
-    const events = (((storage.args[0] as MichelinePrim)
-      .args[1] as MichelinePrim).args[1] as MichelinePrim).args
-    return events[0] as MichelinePrim[]
+    const events = ((storage.args[1] as MichelinePrim).args[1] as MichelinePrim)
+      .args[0]
+    return events as MichelinePrim[]
   }
 
   private getHash(e: MichelinePrim): Bytes {
