@@ -57,6 +57,7 @@ export class CommitmentContract implements ICommitmentContract {
     )
     let latestBlockNo = 0
     events.map(e => {
+      // remove 05
       const blockNo = this.getBlockNoFromHex(e.args[1][0].slice(2))
       if (latestBlockNo < blockNo) latestBlockNo = blockNo
     })
@@ -68,6 +69,7 @@ export class CommitmentContract implements ICommitmentContract {
       EventType.BLOCK_SUBMITED
     )
     events.filter(e => {
+      // remove 05
       const blockNo = this.getBlockNoFromHex(e.args[1][0].slice(2))
       return blockNo.toString() === blockNumber.toString()
     })

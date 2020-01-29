@@ -160,9 +160,7 @@ export default class EventWatcher implements IEventWatcher {
    * get contract event storage
    * @param eventType
    */
-  public async getEventStorage(
-    eventType?: EventType
-  ): Promise<MichelinePrim[]> {
+  public async getEventStorage(eventType: EventType): Promise<MichelinePrim[]> {
     const block = await TezosConseilClient.getBlockHead(
       this.blockInfoProvider.conseilServerInfo,
       this.blockInfoProvider.conseilServerInfo.network
@@ -173,12 +171,11 @@ export default class EventWatcher implements IEventWatcher {
         this.contractAddress
       )
     )
-    if (eventType) {
-      storage.filter((e: MichelinePrim) => {
-        return (e.args[0] as MichelineString).string === eventType.toString()
-      })
-    }
-    return storage
+    storage.filter((e: MichelinePrim) => {
+      return (e.args[0] as MichelineString).string === eventType.toString()
+    })
+
+    return storage[0].args[1] as MichelinePrim[]
   }
 
   /**
