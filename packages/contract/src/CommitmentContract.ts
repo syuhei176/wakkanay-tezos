@@ -84,7 +84,8 @@ export class CommitmentContract implements ICommitmentContract {
       const root = log.values[1].bytes
       handler(
         BigNumber.fromString(blockNumber.toString()),
-        Bytes.fromHexString(root)
+        // remove 05
+        Bytes.fromHexString(root.slice(2))
       )
     })
     this.eventWatcher.cancel()
