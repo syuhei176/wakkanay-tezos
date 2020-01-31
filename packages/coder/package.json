@@ -49,12 +49,12 @@
     }
   },
   "devDependencies": {
-    "@cryptoeconomicslab/coder": "^0.0.5",
-    "@cryptoeconomicslab/primitives": "^0.0.5",
+    "@cryptoeconomicslab/coder": "^0.0.12",
+    "@cryptoeconomicslab/primitives": "^0.0.12",
     "@types/lodash.flattendeep": "^4.4.6"
   },
   "peerDependencies": {
-    "@cryptoeconomicslab/primitives": "^0.0.5"
+    "@cryptoeconomicslab/primitives": "^0.0.12"
   },
   "dependencies": {
     "conseiljs": "^0.3.1",

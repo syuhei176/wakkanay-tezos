@@ -108,7 +108,7 @@ export function decodeInner(d: Codable, input: any): Codable {
   return d
 }
 
-const TzCoder: Coder = {
+export const TzCoder: Coder = {
   /**
    * encode given codable object into Micheline string representation
    * @param input codable object to encode
