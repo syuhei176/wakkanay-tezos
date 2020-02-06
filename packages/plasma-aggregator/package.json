@@ -1,0 +1,69 @@
+{
+  "name": "@cryptoeconomicslab/tezos-plasma-aggregator",
+  "version": "0.0.3",
+  "description": "tezos-aggregator",
+  "author": {
+    "name": "Cryptoeconomics Lab",
+    "url": "https://www.cryptoeconomicslab.com/"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "scripts": {
+    "start": "node lib/index",
+    "build": "tsc --build",
+    "build:check": "tsc --noEmit",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint --ext ts,tsx src",
+    "lint:fix": "eslint --ext ts,tsx src --fix",
+    "doc": "typedoc --out docs src",
+    "clean": "rm -rf lib docs"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testMatch": [
+      "**/__tests__/**/?(*.)+(spec|test).(ts|js)",
+      "**/?(*.)+(spec|test).ts"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.json"
+      }
+    }
+  },
+  "dependencies": {
+    "@cryptoeconomicslab/coder": "^0.0.12",
+    "@cryptoeconomicslab/level-kvs": "^0.0.4",
+    "@cryptoeconomicslab/plasma-aggregator": "0.0.13",
+    "@cryptoeconomicslab/primitives": "^0.0.12",
+    "@cryptoeconomicslab/tezos-coder": "0.0.3",
+    "@cryptoeconomicslab/tezos-contract": "0.0.3",
+    "@cryptoeconomicslab/tezos-wallet": "0.0.3",
+    "conseiljs": "^0.3.7",
+    "tslib": "^1.10.0"
+  },
+  "peerDependencies": {
+    "@cryptoeconomicslab/primitives": "^0.0.12"
+  },
+  "devDependencies": {
+    "ts-node": "^8.6.2",
+    "typescript": "^3.7.5"
+  }
+}
