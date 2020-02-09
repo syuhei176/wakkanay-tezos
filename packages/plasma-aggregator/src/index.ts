@@ -24,12 +24,13 @@ const instantiate = async (): Promise<Aggregator> => {
   const kvs = new InMemoryKeyValueStore(Bytes.fromString('aaaaa'))
   await kvs.open()
   const network = process.env.TEZOS_NETWORK || 'babylonnet'
+  const apiKey = process.env.TEZOS_APIKEY || 'hooman'
   const wallet = new TzWallet(
     await TezosWalletUtil.restoreIdentityWithSecretKey(process.env
       .AGGREGATOR_PRIVATE_KEY as string),
     {
       url: process.env.MAIN_CHAIN_HOST as string,
-      apiKey: 'hooman',
+      apiKey: apiKey,
       network: network
     }
   )
