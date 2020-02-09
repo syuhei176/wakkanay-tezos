@@ -9,3 +9,7 @@ Wakkanay-Tezos is experimental ovm implementation in TypeScript for Tezos.
 ```
 npm test
 ```
+
+## Run
+
+[@cryptoeconomicslab/tezos-plasma-aggregator](https://github.com/cryptoeconomicslab/wakkanay-tezos/tree/master/packages/plasma-aggregator)
