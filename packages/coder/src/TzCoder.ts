@@ -9,6 +9,7 @@ import {
 import flattenDeep from 'lodash.flattendeep'
 import { AbiEncodeError, AbiDecodeError } from './Error'
 import { MichelinePrimItem, isMichelinePrim } from './MichelineTypes'
+import JSBI from 'jsbi'
 
 function encodeToPair(
   codables: Codable[],
@@ -79,7 +80,7 @@ export function decodeInner(d: Codable, input: any): Codable {
   if (c === 'Integer') {
     d.setData(Number(input.int))
   } else if (c === 'BigNumber') {
-    d.setData(BigInt(input.string))
+    d.setData(JSBI.BigInt(input.string))
   } else if (c === 'Address') {
     d.setData(input.string)
   } else if (c === 'Bytes') {

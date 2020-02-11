@@ -49,8 +49,8 @@
     }
   },
   "devDependencies": {
-    "@cryptoeconomicslab/coder": "^0.0.12",
-    "@cryptoeconomicslab/primitives": "^0.0.12",
+    "@cryptoeconomicslab/coder": "0.0.15",
+    "@cryptoeconomicslab/primitives": "0.0.15",
     "@types/lodash.flattendeep": "^4.4.6"
   },
   "peerDependencies": {
@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "conseiljs": "^0.3.1",
+    "jsbi": "^3.1.1",
     "lodash.flattendeep": "^4.4.0"
   }
 }
