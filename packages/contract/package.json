@@ -65,5 +65,6 @@
   },
   "peerDependencies": {
     "@cryptoeconomicslab/primitives": "^0.0.12"
-  }
+  },
+  "gitHead": "a8e24e6d5139974d682aa35de30dda982f06e743"
 }
