@@ -8,44 +8,47 @@ import {
   Tuple,
   Struct
 } from '@cryptoeconomicslab/primitives'
-import { TezosLanguageUtil } from 'conseiljs'
+import { TezosMessageUtils } from 'conseiljs'
 
 describe('TzCoder', () => {
+  const testAddress = TezosMessageUtils.writeAddress(
+    'tz1TGu6TN5GSez2ndXXeDX6LgUDvLzPLqgYV'
+  )
   describe('encode', () => {
     test('encode Address', () => {
-      const addr = Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
+      const addr = Address.from(testAddress)
       expect(TzCoder.encode(addr).toHexString()).toBe(
-        '0x0100000024747a31647775396179623763726e713479327a616a6970646a667573766b686873387661'
+        '0x050a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d'
       )
     })
 
     test('encode BigNumber', () => {
       const addr = BigNumber.from(1)
-      expect(TzCoder.encode(addr).toHexString()).toBe('0x010000000131')
+      expect(TzCoder.encode(addr).toHexString()).toBe('0x05010000000131')
     })
 
     test('encode Struct', () => {
       const struct = Struct.from([
         {
           key: 'addr',
-          value: Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
+          value: Address.from(testAddress)
         },
         { key: 'greet', value: Bytes.fromString('hello') },
         { key: 'num', value: Integer.from(5) }
       ])
       expect(TzCoder.encode(struct).toHexString()).toBe(
-        '0x070707070100000024747a31647775396179623763726e713479327a616a6970646a667573766b6868733876610a0000000568656c6c6f0005'
+        '0x05070707070a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d0a0000000568656c6c6f0005'
       )
     })
 
     test('encode Tuple', () => {
       const tuple = Tuple.from([
         Integer.from(5),
-        Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va'),
+        Address.from(testAddress),
         Bytes.fromString('hello')
       ])
       expect(TzCoder.encode(tuple).toHexString()).toBe(
-        '0x0707070700050100000024747a31647775396179623763726e713479327a616a6970646a667573766b6868733876610a0000000568656c6c6f'
+        '0x050707070700050a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d0a0000000568656c6c6f'
       )
     })
 
@@ -59,7 +62,7 @@ describe('TzCoder', () => {
         Integer.from(3)
       ])
       expect(TzCoder.encode(list).toHexString()).toBe(
-        '0x0200000006000100020003'
+        '0x050200000006000100020003'
       )
     })
 
@@ -72,7 +75,7 @@ describe('TzCoder', () => {
         Tuple.from([Bytes.fromString('test2'), Integer.from(2)])
       ])
       expect(TzCoder.encode(list).toHexString()).toBe(
-        '0x020000001c07070a000000057465737431000107070a0000000574657374320002'
+        '0x05020000001c07070a000000057465737431000107070a0000000574657374320002'
       )
     })
 
@@ -95,7 +98,7 @@ describe('TzCoder', () => {
         ])
       ])
       expect(TzCoder.encode(list).toHexString()).toBe(
-        '0x020000001c07070a0000000568656c6c6f000107070a0000000568656c6c6f0002'
+        '0x05020000001c07070a0000000568656c6c6f000107070a0000000568656c6c6f0002'
       )
     })
 
@@ -111,28 +114,28 @@ describe('TzCoder', () => {
         List.from(childFactory, [Integer.from(6), Integer.from(9)])
       ])
       expect(TzCoder.encode(list).toHexString()).toBe(
-        '0x0200000012020000000400010004020000000400060009'
+        '0x050200000012020000000400010004020000000400060009'
       )
     })
 
     test('encode empty List', () => {
       const list = List.from(Bytes, [])
-      expect(TzCoder.encode(list).toHexString()).toBe('0x0200000000')
+      expect(TzCoder.encode(list).toHexString()).toBe('0x050200000000')
     })
   })
 
   describe('decode', () => {
     test('decode Address', () => {
       const b = Bytes.fromHexString(
-        '0x0100000024747a31647775396179623763726e713479327a616a6970646a667573766b686873387661'
+        '0x050a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d'
       )
       expect(TzCoder.decode(Address.default(), b)).toStrictEqual(
-        Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
+        Address.from(testAddress)
       )
     })
 
     test('decode BigNumber', () => {
-      const b = Bytes.fromHexString('0x010000000131')
+      const b = Bytes.fromHexString('0x05010000000131')
       expect(TzCoder.decode(BigNumber.default(), b)).toStrictEqual(
         BigNumber.from(1)
       )
@@ -140,7 +143,7 @@ describe('TzCoder', () => {
 
     test('decode Struct', () => {
       const b = Bytes.fromHexString(
-        '0x070707070100000024747a31647775396179623763726e713479327a616a6970646a667573766b6868733876610a0000000568656c6c6f0005'
+        '0x05070707070a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d0a0000000568656c6c6f0005'
       )
       const t = Struct.from([
         { key: 'addr', value: Address.default() },
@@ -151,7 +154,7 @@ describe('TzCoder', () => {
         Struct.from([
           {
             key: 'addr',
-            value: Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va')
+            value: Address.from(testAddress)
           },
           {
             key: 'greet',
@@ -164,7 +167,7 @@ describe('TzCoder', () => {
 
     test('decode Tuple', () => {
       const b = Bytes.fromHexString(
-        '0x0707070700050100000024747a31647775396179623763726e713479327a616a6970646a667573766b6868733876610a0000000568656c6c6f'
+        '0x050707070700050a00000016000053c1edca8bd5c21c61d6f1fd091fa51d562aff1d0a0000000568656c6c6f'
       )
       const t = Tuple.from([
         Integer.default(),
@@ -174,14 +177,14 @@ describe('TzCoder', () => {
       expect(TzCoder.decode(t, b)).toStrictEqual(
         Tuple.from([
           Integer.from(5),
-          Address.from('tz1dwu9ayb7crnq4y2zajipdjfusvkhhs8va'),
+          Address.from(testAddress),
           Bytes.fromString('hello')
         ])
       )
     })
 
     test('decode List of Integer', () => {
-      const b = Bytes.fromHexString('0x0200000006000100020003')
+      const b = Bytes.fromHexString('0x050200000006000100020003')
       const t = List.default(Integer, Integer.default())
       expect(TzCoder.decode(t, b)).toStrictEqual(
         List.from(Integer, [Integer.from(1), Integer.from(2), Integer.from(3)])
@@ -193,7 +196,7 @@ describe('TzCoder', () => {
         default: () => Tuple.from([Bytes.default(), Integer.default()])
       }
       const b = Bytes.fromHexString(
-        '0x020000001c07070a000000057465737431000107070a0000000574657374320002'
+        '0x05020000001c07070a000000057465737431000107070a0000000574657374320002'
       )
       const t = List.default(
         factory,
@@ -216,7 +219,7 @@ describe('TzCoder', () => {
           ])
       }
       const b = Bytes.fromHexString(
-        '0x020000001c07070a0000000568656c6c6f000107070a0000000568656c6c6f0002'
+        '0x05020000001c07070a0000000568656c6c6f000107070a0000000568656c6c6f0002'
       )
       const t = List.default(
         factory,
@@ -247,7 +250,7 @@ describe('TzCoder', () => {
         default: () => List.from(childFactory, [])
       }
       const b = Bytes.fromHexString(
-        '0x0200000012020000000400010004020000000400060009'
+        '0x050200000012020000000400010004020000000400060009'
       )
       const t = List.default(
         factory,

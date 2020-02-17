@@ -10,7 +10,7 @@ import flattenDeep from 'lodash.flattendeep'
 import { AbiEncodeError, AbiDecodeError } from './Error'
 import { MichelinePrimItem, isMichelinePrim } from './MichelineTypes'
 import JSBI from 'jsbi'
-import { TezosLanguageUtil } from 'conseiljs'
+import { TezosLanguageUtil, TezosMessageUtils } from 'conseiljs'
 
 function encodeToPair(
   codables: Codable[],
@@ -41,7 +41,7 @@ export function encodeInnerToMichelinePrimItem(
   } else if (c === 'BigNumber') {
     return { string: input }
   } else if (c === 'Address') {
-    return { string: input }
+    return { bytes: input }
   } else if (c === 'Bytes') {
     return {
       bytes: Bytes.from(input)
@@ -87,7 +87,7 @@ export function decodeInner(d: Codable, input: any): Codable {
   } else if (c === 'BigNumber') {
     d.setData(JSBI.BigInt(input.string))
   } else if (c === 'Address') {
-    d.setData(input.string)
+    d.setData(input.bytes)
   } else if (c === 'Bytes') {
     d.setData(Bytes.fromHexString(input.bytes).data)
   } else if (c === 'List') {
@@ -121,11 +121,14 @@ export const TzCoder: Coder = {
    */
   encode(input: Codable): Bytes {
     const michelinePrimItem = encodeInnerToMichelinePrimItem(input, input.raw)
-    return Bytes.fromHexString(
-      TezosLanguageUtil.translateMichelineToHex(
-        JSON.stringify(michelinePrimItem)
+    return Bytes.concat([
+      Bytes.fromHexString('05'),
+      Bytes.fromHexString(
+        TezosLanguageUtil.translateMichelineToHex(
+          JSON.stringify(michelinePrimItem)
+        )
       )
-    )
+    ])
   },
   /**
    * decode given Micheline string into given codable object
@@ -133,11 +136,13 @@ export const TzCoder: Coder = {
    * @param data Micheline string to decode
    */
   decode<T extends Codable>(d: T, data: Bytes): T {
+    // remove "0x"
+    const hexString = data.toHexString().substr(2)
+    // remove "05"
+    const body = hexString.substr(2)
     return decodeInner(
       d,
-      JSON.parse(
-        TezosLanguageUtil.hexToMicheline(data.toHexString().substr(2)).code
-      )
+      JSON.parse(TezosLanguageUtil.hexToMicheline(body).code)
     ) as T
   }
 }
