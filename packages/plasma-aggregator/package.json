@@ -49,10 +49,10 @@
     }
   },
   "dependencies": {
-    "@cryptoeconomicslab/coder": "^0.0.25",
+    "@cryptoeconomicslab/coder": "^0.0.27",
     "@cryptoeconomicslab/level-kvs": "^0.0.6",
-    "@cryptoeconomicslab/plasma-aggregator": "^0.0.25",
-    "@cryptoeconomicslab/primitives": "^0.0.25",
+    "@cryptoeconomicslab/plasma-aggregator": "^0.0.27",
+    "@cryptoeconomicslab/primitives": "^0.0.27",
     "@cryptoeconomicslab/tezos-coder": "^0.0.5",
     "@cryptoeconomicslab/tezos-contract": "^0.0.5",
     "@cryptoeconomicslab/tezos-wallet": "^0.0.5",
@@ -60,11 +60,11 @@
     "tslib": "^1.10.0"
   },
   "peerDependencies": {
-    "@cryptoeconomicslab/primitives": "^0.0.25"
+    "@cryptoeconomicslab/primitives": "^0.0.27"
   },
   "devDependencies": {
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
-  "gitHead": "a8e24e6d5139974d682aa35de30dda982f06e743"
+  "gitHead": "0d97cb4bf3b89ae0d3e46166bb652473f2d797f6"
 }
