@@ -49,20 +49,20 @@
     }
   },
   "dependencies": {
-    "@cryptoeconomicslab/signature": "^0.0.25",
+    "@cryptoeconomicslab/signature": "^0.0.27",
     "@cryptoeconomicslab/tezos-coder": "^0.0.5",
-    "@cryptoeconomicslab/wallet": "^0.0.25",
+    "@cryptoeconomicslab/wallet": "^0.0.27",
     "conseiljs": "^0.3.1",
     "lodash.flattendeep": "^4.4.0"
   },
   "devDependencies": {
     "@cryptoeconomicslab/level-kvs": "^0.0.6",
-    "@cryptoeconomicslab/primitives": "^0.0.25",
+    "@cryptoeconomicslab/primitives": "^0.0.27",
     "@types/libsodium-wrappers-sumo": "^0.7.3",
     "@types/lodash.flattendeep": "^4.4.6"
   },
   "peerDependencies": {
-    "@cryptoeconomicslab/primitives": "^0.0.25"
+    "@cryptoeconomicslab/primitives": "^0.0.27"
   },
-  "gitHead": "a8e24e6d5139974d682aa35de30dda982f06e743"
+  "gitHead": "0d97cb4bf3b89ae0d3e46166bb652473f2d797f6"
 }
