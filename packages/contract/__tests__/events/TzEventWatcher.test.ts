@@ -1,26 +1,35 @@
 jest.unmock('../../src/')
-import EventWatcher from '../../src/events/TzEventWatcher'
-import * as types from '@cryptoeconomicslab/primitives'
+
+import { Bytes } from '@cryptoeconomicslab/primitives'
 import { KeyValueStore } from '@cryptoeconomicslab/db'
 import { InMemoryKeyValueStore } from '@cryptoeconomicslab/level-kvs'
 import { MockBlockInfoProvider } from './MockBlockInfoProvider'
-import EventLog from '@cryptoeconomicslab/contract'
+import EventWatcher, { EventType } from '../../src/events/TzEventWatcher'
 
-import { Bytes } from '@cryptoeconomicslab/primitives'
+jest.mock('conseiljs', () => {
+  const TezosConseilClient = {
+    getBlockHead: jest.fn().mockImplementation(() => {
+      return 196530
+    })
+  }
+  return {
+    ...jest.requireActual('conseiljs'),
+    TezosConseilClient
+  }
+})
 
 describe('TzEventWatcher', () => {
   let kvs: KeyValueStore
   beforeEach(async () => {
-    kvs = new InMemoryKeyValueStore(types.Bytes.default())
+    kvs = new InMemoryKeyValueStore(Bytes.default())
   })
+  const conseilServerInfo = {
+    url: 'https://tezos-dev.cryptonomic-infra.tech',
+    apiKey: 'hooman',
+    network: 'babylonnet'
+  }
 
   describe('poll', () => {
-    const conseilServerInfo = {
-      url: 'https://tezos-dev.cryptonomic-infra.tech',
-      apiKey: 'hooman',
-      network: 'babylonnet'
-    }
-
     it('succeed to poll events', async () => {
       const eventWatcher = new EventWatcher({
         conseilServerInfo: conseilServerInfo,
@@ -34,7 +43,7 @@ describe('TzEventWatcher', () => {
       await eventWatcher.poll(196527, 196530, () => {})
       expect(handler).toHaveBeenCalledWith({
         name: 'BlockSubmitted',
-        values: [{ int: '0' }, { string: 'root' }]
+        values: [{ int: '0' }, { bytes: '010203040506' }]
       })
       expect(handler).toHaveBeenCalledTimes(1)
       await eventWatcher.poll(196527, 196530, () => {})
@@ -54,6 +63,28 @@ describe('TzEventWatcher', () => {
       eventWatcher.subscribe('BlockSubmitted', handler)
       await eventWatcher.poll(196527, 196530, () => {})
       expect(handler).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  describe('getEventStorage', () => {
+    it('succeed to getEventStorage', async () => {
+      const eventWatcher = new EventWatcher({
+        conseilServerInfo: conseilServerInfo,
+        kvs,
+        contractAddress: 'KT1HSBDy3MgRPh2G4oqBQMUsyxy5EYPGKzpv',
+        options: { interval: 1000 },
+        blockInfoProvider: new MockBlockInfoProvider(conseilServerInfo, false)
+      })
+      const storage = await eventWatcher.getEventStorage(
+        EventType.BLOCK_SUBMITED
+      )
+      expect(storage[0]).toStrictEqual({
+        prim: 'Pair',
+        args: [
+          { int: '0' },
+          [{ bytes: '001' }, { bytes: '0a00000006010203040506' }]
+        ]
+      })
     })
   })
 })

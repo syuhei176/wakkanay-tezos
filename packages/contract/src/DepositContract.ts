@@ -297,8 +297,9 @@ export class DepositContract implements IDepositContract {
 
   subscribeExitFinalized(handler: (exitId: Bytes) => void) {
     this.eventWatcher.subscribe(EventType.EXIT_FINALIZED, (log: EventLog) => {
-      const [exitId] = log.values[1].string
-      handler(Bytes.fromHexString(exitId))
+      const [exitId] = log.values[1].bytes
+      // remove 05
+      handler(Bytes.fromHexString(exitId.slice(2)))
     })
     this.eventWatcher.cancel()
     this.eventWatcher.start(() => {
